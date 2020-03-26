@@ -20,7 +20,7 @@
         "@babel/core": "7.9.0",
         "@babel/preset-env": "7.9.0",
         "chance": "1.1.4",
-        "jest": "24.9.0",
+        "jest": "25.2.2",
         "@commitlint/cli": "8.3.5",
         "@commitlint/config-conventional": "8.3.4",
         "commitizen": "4.0.3",
