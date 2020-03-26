@@ -26,7 +26,6 @@ jobs:
               with:
                   node-version: 10
                   registry-url: 'https://registry.npmjs.org'
-                  scope: '@tractorzoom'
             - run: npm ci
             - run: npm run build
             - name: Semantic Release
