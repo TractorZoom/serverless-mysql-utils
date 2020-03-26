@@ -2,7 +2,7 @@
 
 ## Available Methods
 
-##### Method: `executeQuery(method, params)`
+##### Method: `executeQuery(queryString)`
 
 | parameter | type   | description                     |
 | --------- | ------ | ------------------------------- |
