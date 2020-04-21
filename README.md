@@ -18,7 +18,7 @@ npm i @tractorzoom/serverless-mysql-utils
 
 ##### Usage:
 
-The following environment variables must be set to make the connection with mysql:
+The following environment variables must be set or a config object must be passed as a second arg to `executeQuery` to make the connection with mysql:
 | variable | type | description |
 | --------- | ------ | ------------------------------- |
 | database | string | mame of the database to use for this connection |
@@ -27,17 +27,18 @@ The following environment variables must be set to make the connection with mysq
 | password | string | the password of that mysql user |
 
 ```js
-import { executeQuery } from "@tractorzoom/serverless-mysql-utils";
+import dbConfig from './config';
+import { executeQuery } from '@tractorzoom/serverless-mysql-utils';
 
 export const getItems = async () => {
-  const queryString = `SELECT * FROM MyTable WHERE id = "some-guid"`;
+    const queryString = `SELECT * FROM MyTable WHERE id = "some-guid"`;
 
-  const response = await executeQuery(queryString);
+    const response = await executeQuery(queryString, dbConfig);
 
-  if (response.error) {
-    return [];
-  }
+    if (response.error) {
+        return [];
+    }
 
-  return response;
+    return response;
 };
 ```

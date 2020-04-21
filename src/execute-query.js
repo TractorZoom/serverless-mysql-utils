@@ -1,32 +1,36 @@
-const mysql = require("serverless-mysql")({
-  config: {
-    host: process.env.host,
-    user: process.env.user,
-    password: process.env.password,
-    database: process.env.database
-  }
+const mysql = require('serverless-mysql')({
+    config: {
+        host: process.env.host,
+        user: process.env.user,
+        password: process.env.password,
+        database: process.env.database,
+    },
 });
 
-const executeQuery = async query => {
-  let response;
+const executeQuery = async (query, dbConfig) => {
+    if (dbConfig) {
+        mysql.config(dbConfig);
+    }
 
-  try {
-    response = await mysql.query(query);
-  } catch (ex) {
-    console.error("query failed: ", ex);
+    let response;
 
     try {
-      response = await mysql.query(query);
-    } catch (ex2) {
-      console.error("retried query failed: ", ex2);
+        response = await mysql.query(query);
+    } catch (ex) {
+        console.error('query failed: ', ex);
 
-      response = { error: `${ex2}` };
+        try {
+            response = await mysql.query(query);
+        } catch (ex2) {
+            console.error('retried query failed: ', ex2);
+
+            response = { error: `${ex2}` };
+        }
+    } finally {
+        await mysql.end();
+
+        return response;
     }
-  } finally {
-    await mysql.end();
-
-    return response;
-  }
 };
 
 export default executeQuery;
