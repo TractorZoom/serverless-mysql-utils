@@ -8,9 +8,12 @@ const mysql = require('serverless-mysql')({
 });
 
 const executeQuery = async (query, dbConfig) => {
+    console.log('custom dbConfig passed: ', dbConfig);
     if (dbConfig) {
         mysql.config(dbConfig);
     }
+
+    console.log('mysql object: ', mysql);
 
     let response;
 
