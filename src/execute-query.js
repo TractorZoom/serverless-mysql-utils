@@ -30,7 +30,7 @@ const executeQuery = async (query, dbConfig) => {
             response = { error: `${ex2}` };
         }
     } finally {
-        await mysql.end();
+        await mysql.quit();
 
         return response;
     }

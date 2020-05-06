@@ -25,7 +25,7 @@ describe('serverless mysql utility', () => {
 
     afterEach(() => {
         mysql.config.mockRestore();
-        mysql.end.mockRestore();
+        mysql.quit.mockRestore();
         mysql.query.mockRestore();
     });
 
@@ -78,10 +78,10 @@ describe('serverless mysql utility', () => {
         expect(response).toEqual(mockData.errorMessage);
     });
 
-    it('should end the connection', async () => {
+    it('should quit the connection', async () => {
         await executeQuery(mockData.query);
 
-        expect(mysql.end).toHaveBeenCalledTimes(1);
-        expect(mysql.end).toHaveBeenCalledWith();
+        expect(mysql.quit).toHaveBeenCalledTimes(1);
+        expect(mysql.quit).toHaveBeenCalledWith();
     });
 });
