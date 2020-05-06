@@ -13,7 +13,7 @@ const executeQuery = async (query, dbConfig) => {
         mysql.config(dbConfig);
     }
 
-    console.log('mysql object: ', mysql);
+    console.log('mysql config from getConfig: ', mysql.getConfig());
 
     let response;
 
