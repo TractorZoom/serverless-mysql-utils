@@ -8,6 +8,10 @@ const mysql = require('serverless-mysql')({
 });
 
 const executeQuery = async (query, dbConfig) => {
+    if (JSON.stringify(mysql.getConfig()) !== JSON.stringify(dbConfig)) {
+        await mysql.quit();
+    }
+
     if (dbConfig) {
         mysql.config(dbConfig);
     }
@@ -27,7 +31,7 @@ const executeQuery = async (query, dbConfig) => {
             response = { error: `${ex2}` };
         }
     } finally {
-        await mysql.quit();
+        await mysql.end();
 
         return response;
     }

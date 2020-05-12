@@ -20,13 +20,38 @@ describe('serverless mysql utility', () => {
             rejectError,
         };
 
+        mysql.end.mockResolvedValue();
         mysql.query.mockResolvedValue(mockData.queryResponse);
+        mysql.quit.mockResolvedValue();
     });
 
     afterEach(() => {
         mysql.config.mockRestore();
+        mysql.end.mockRestore();
         mysql.quit.mockRestore();
         mysql.query.mockRestore();
+    });
+
+    it('should quit connection if configuration passed is different than current configuration', async () => {
+        // given
+        const dbConfig = {
+            host: chance.word(),
+            user: chance.word(),
+            password: chance.word(),
+            database: chance.word(),
+        };
+
+        process.env.database = chance.word();
+        process.env.host = chance.word();
+        process.env.password = chance.word();
+        process.env.user = chance.word();
+
+        // when
+        await executeQuery(mockData.query, dbConfig);
+
+        // then
+        expect(mysql.quit).toHaveBeenCalledTimes(1);
+        expect(mysql.quit).toHaveBeenCalledWith();
     });
 
     it('should configure mysql when the option is passed', async () => {
@@ -78,10 +103,10 @@ describe('serverless mysql utility', () => {
         expect(response).toEqual(mockData.errorMessage);
     });
 
-    it('should quit the connection', async () => {
+    it('should end the connection', async () => {
         await executeQuery(mockData.query);
 
-        expect(mysql.quit).toHaveBeenCalledTimes(1);
-        expect(mysql.quit).toHaveBeenCalledWith();
+        expect(mysql.end).toHaveBeenCalledTimes(1);
+        expect(mysql.end).toHaveBeenCalledWith();
     });
 });
