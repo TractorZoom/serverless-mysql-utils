@@ -30,7 +30,7 @@
         "jest": "24.9.0",
         "prettier": "2.0.5",
         "pretty-quick": "2.0.1",
-        "semantic-release": "17.0.7"
+        "semantic-release": "17.0.8"
     },
     "dependencies": {
         "serverless-mysql": "1.5.3"
