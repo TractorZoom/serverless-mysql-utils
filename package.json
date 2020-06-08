@@ -39,5 +39,19 @@
         "commitizen": {
             "path": "cz-conventional-changelog"
         }
-    }
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/TractorZoom/serverless-mysql-utils.git"
+    },
+    "homepage": "https://github.com/TractorZoom/serverless-mysql-utils",
+    "bugs": {
+        "url": "https://github.com/TractorZoom/serverless-mysql-utils/issues"
+    },
+    "keywords": [
+        "serverless",
+        "mysql",
+        "serverless-mysql",
+        "sql"
+    ]
 }
