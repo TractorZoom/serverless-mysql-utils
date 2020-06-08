@@ -6,31 +6,31 @@
     "author": "@TractorZoom",
     "license": "MIT",
     "engines": {
-        "node": "10.x"
+        "node": "12.x"
     },
     "scripts": {
         "build": "./node_modules/.bin/babel src --out-dir lib --copy-files",
-        "coverage": "jest --coverage",
-        "test": "jest",
         "commit": "git-cz",
+        "test": "jest",
+        "prettier:all": "prettier --write './**/*.*'",
         "pretty-quick": "pretty-quick"
     },
     "devDependencies": {
         "@babel/cli": "7.8.4",
         "@babel/core": "7.9.0",
         "@babel/preset-env": "7.9.0",
-        "chance": "1.1.4",
-        "jest": "24.9.0",
         "@commitlint/cli": "8.3.5",
         "@commitlint/config-conventional": "8.3.4",
-        "commitizen": "4.0.3",
-        "husky": "4.2.3",
-        "prettier": "1.19.1",
+        "@semantic-release/changelog": "5.0.1",
+        "@semantic-release/git": "9.0.0",
+        "@semantic-release/release-notes-generator": "9.0.1",
+        "chance": "1.1.4",
+        "commitizen": "4.1.2",
+        "husky": "4.2.5",
+        "jest": "24.9.0",
+        "prettier": "2.0.5",
         "pretty-quick": "2.0.1",
-        "@semantic-release/changelog": "3.0.6",
-        "@semantic-release/git": "8.0.0",
-        "@semantic-release/release-notes-generator": "7.3.5",
-        "semantic-release": "16.0.4"
+        "semantic-release": "17.0.7"
     },
     "dependencies": {
         "serverless-mysql": "1.5.3"

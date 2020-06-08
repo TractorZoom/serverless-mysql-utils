@@ -7,7 +7,9 @@
             "renovate": true,
             "semanticRelease": true,
             "terraform": false,
-            "s3Deploy": false
+            "s3Deploy": false,
+            "samDeploy": false,
+            "jestConfig": true
         }
     }
 }
