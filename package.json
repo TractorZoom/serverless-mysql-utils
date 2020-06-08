@@ -33,7 +33,7 @@
         "semantic-release": "17.0.8"
     },
     "dependencies": {
-        "serverless-mysql": "1.5.3"
+        "serverless-mysql": "1.5.4"
     },
     "config": {
         "commitizen": {
