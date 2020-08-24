@@ -28,7 +28,7 @@
         "commitizen": "4.1.5",
         "husky": "4.2.5",
         "jest": "26.4.2",
-        "prettier": "2.0.5",
+        "prettier": "2.1.0",
         "pretty-quick": "2.0.2",
         "semantic-release": "17.1.1"
     },
