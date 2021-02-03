@@ -16,9 +16,9 @@
         "pretty-quick": "pretty-quick"
     },
     "devDependencies": {
-        "@babel/cli": "7.12.10",
-        "@babel/core": "7.12.10",
-        "@babel/preset-env": "7.12.11",
+        "@babel/cli": "7.12.13",
+        "@babel/core": "7.12.13",
+        "@babel/preset-env": "7.12.13",
         "@commitlint/cli": "8.3.5",
         "@commitlint/config-conventional": "8.3.4",
         "@semantic-release/changelog": "5.0.1",
