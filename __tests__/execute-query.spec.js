@@ -1,6 +1,6 @@
 import Chance from 'chance';
 import Mysql from 'serverless-mysql';
-import executeQuery from '../src/execute-query';
+import { executeQuery } from '../src/execute-query';
 
 const chance = new Chance();
 const mysql = Mysql();
@@ -77,7 +77,7 @@ describe('serverless mysql utility', () => {
         expect(mysql.query).toHaveBeenCalledTimes(1);
         expect(mysql.query).toHaveBeenCalledWith(mockData.query);
 
-        expect(response).toEqual(mockData.queryResponse);
+        expect(response.data).toEqual(mockData.queryResponse);
     });
 
     it('should fail the first query and succeed on the second', async () => {
@@ -88,7 +88,7 @@ describe('serverless mysql utility', () => {
         expect(mysql.query).toHaveBeenCalledTimes(2);
         expect(mysql.query).toHaveBeenCalledWith(mockData.query);
 
-        expect(response).toEqual(mockData.queryResponse);
+        expect(response.data).toEqual(mockData.queryResponse);
     });
 
     it('should fail the first query and return an error when the second query fails', async () => {
