@@ -1,6 +1,6 @@
 import Chance from 'chance';
 import Mysql from 'serverless-mysql';
-import executeQuery from '../src/execute-query';
+import { executeQuery } from '../src/execute-query';
 
 const chance = new Chance();
 const mysql = Mysql();
