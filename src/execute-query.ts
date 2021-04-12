@@ -1,4 +1,5 @@
 import { ConnectionConfig } from 'mysql';
+import { QueryResponse } from './types';
 import * as serverlessMysql from 'serverless-mysql';
 
 const defaultConfig: ConnectionConfig = {
@@ -9,7 +10,7 @@ const defaultConfig: ConnectionConfig = {
 };
 const mysql = serverlessMysql({ config: defaultConfig });
 
-async function executeQuery<T>(query: string, dbConfig: ConnectionConfig): Promise<{ error: string; data: T }> {
+export async function executeQuery<T>(query: string, dbConfig: ConnectionConfig): QueryResponse<T> {
     if (JSON.stringify(mysql.getConfig()) !== JSON.stringify(dbConfig)) {
         await mysql.quit();
     }
@@ -39,5 +40,3 @@ async function executeQuery<T>(query: string, dbConfig: ConnectionConfig): Promi
         return { data, error };
     }
 }
-
-export default executeQuery;

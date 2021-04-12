@@ -1,3 +1,4 @@
-import executeQuery from './execute-query';
+import { QueryResponse } from './types';
+import { executeQuery } from './execute-query';
 
-module.exports = { executeQuery };
+export { executeQuery, QueryResponse };

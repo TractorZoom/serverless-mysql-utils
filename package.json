@@ -55,5 +55,6 @@
         "mysql",
         "serverless-mysql",
         "sql"
-    ]
+    ],
+    "types": "./lib/index.d.ts"
 }

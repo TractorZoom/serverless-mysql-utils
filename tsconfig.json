@@ -4,6 +4,7 @@
         "module": "commonjs",
         "noImplicitAny": false,
         "target": "es2019",
-        "outDir": "./lib"
+        "outDir": "./lib",
+        "declaration": true
     }
 }
