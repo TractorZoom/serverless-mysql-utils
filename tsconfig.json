@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "alwaysStrict": true,
+        "module": "commonjs",
+        "noImplicitAny": false,
+        "target": "es2019",
+        "outDir": "./lib"
+    }
+}
