@@ -1,1 +1,1 @@
-export type QueryResponse<T> = Promise<{ error: string; data: T }>;
+export type QueryResponse<T> = Promise<{ data?: T; error?: string }>;
