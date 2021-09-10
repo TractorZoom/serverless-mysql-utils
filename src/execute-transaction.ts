@@ -10,7 +10,7 @@ const defaultConfig: ConnectionConfig = {
 };
 const mysql = serverlessMysql({ config: defaultConfig });
 
-export async function executeTransaction(queries: [string], dbConfig: ConnectionConfig): TransactionResponse {
+export async function executeTransaction(queries: string[], dbConfig: ConnectionConfig): TransactionResponse {
     if (JSON.stringify(mysql.getConfig()) !== JSON.stringify(dbConfig)) {
         await mysql.quit();
     }
@@ -25,9 +25,7 @@ export async function executeTransaction(queries: [string], dbConfig: Connection
     try {
         const transaction = mysql.transaction();
 
-        for (let query in queries) {
-            transaction.query(query);
-        }
+        queries.map((query) => transaction.query(query));
 
         data = await transaction.commit();
     } catch (ex) {
