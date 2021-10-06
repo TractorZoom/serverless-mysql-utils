@@ -1,11 +1,13 @@
 import Chance from 'chance';
 import Mysql from 'serverless-mysql';
 import { executeTransaction } from '../src/execute-transaction';
+import { captureMySQL } from 'aws-xray-sdk';
 
 const chance = new Chance();
 const mysql = Mysql();
 
 jest.mock('serverless-mysql');
+jest.mock('aws-xray-sdk');
 
 describe('execute Transaction', () => {
     let mockData;
@@ -71,6 +73,22 @@ describe('execute Transaction', () => {
         // then
         expect(mysql.config).toHaveBeenCalledTimes(1);
         expect(mysql.config).toHaveBeenCalledWith(dbConfig);
+    });
+
+    it('should capture mysql', async () => {
+        // given
+        const dbConfig = {
+            host: chance.word(),
+            user: chance.word(),
+            password: chance.word(),
+            database: chance.word(),
+        };
+
+        // when
+        await executeTransaction(mockData.queries, dbConfig, { xray: true });
+
+        // then
+        expect(captureMySQL).toHaveBeenCalledTimes(1);
     });
 
     it('should successfully query mysql on the first try', async () => {
