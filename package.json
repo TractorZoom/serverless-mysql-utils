@@ -35,6 +35,7 @@
         "typescript": "4.4.2"
     },
     "dependencies": {
+        "aws-xray-sdk": "3.3.3",
         "serverless-mysql": "1.5.4"
     },
     "config": {

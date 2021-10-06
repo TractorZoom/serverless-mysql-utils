@@ -1,11 +1,13 @@
 import Chance from 'chance';
 import Mysql from 'serverless-mysql';
 import { executeQuery } from '../src/execute-query';
+import { captureMySQL } from 'aws-xray-sdk';
 
 const chance = new Chance();
 const mysql = Mysql();
 
 jest.mock('serverless-mysql');
+jest.mock('aws-xray-sdk');
 
 describe('serverless mysql utility', () => {
     let mockData;
@@ -52,6 +54,27 @@ describe('serverless mysql utility', () => {
         // then
         expect(mysql.quit).toHaveBeenCalledTimes(1);
         expect(mysql.quit).toHaveBeenCalledWith();
+    });
+
+    it('should captureMysql', async () => {
+        // given
+        const dbConfig = {
+            host: chance.word(),
+            user: chance.word(),
+            password: chance.word(),
+            database: chance.word(),
+        };
+
+        process.env.database = chance.word();
+        process.env.host = chance.word();
+        process.env.password = chance.word();
+        process.env.user = chance.word();
+
+        // when
+        await executeQuery(mockData.query, dbConfig, { xray: true });
+
+        // then
+        expect(captureMySQL).toHaveBeenCalledTimes(1);
     });
 
     it('should configure mysql when the option is passed', async () => {

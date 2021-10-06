@@ -1,16 +1,28 @@
-import { ConnectionConfig } from 'mysql';
 import { TransactionResponse } from './types';
 import * as serverlessMysql from 'serverless-mysql';
+import * as AWSXray from 'aws-xray-sdk';
+import * as mysqlInitial from 'mysql';
 
-const defaultConfig: ConnectionConfig = {
+const defaultConfig: mysqlInitial.ConnectionConfig = {
     database: process.env.database,
     host: process.env.host,
     password: process.env.password,
     user: process.env.user,
 };
-const mysql = serverlessMysql({ config: defaultConfig });
 
-export async function executeTransaction(queries: string[], dbConfig: ConnectionConfig): TransactionResponse {
+export async function executeTransaction(
+    queries: string[],
+    dbConfig: mysqlInitial.ConnectionConfig,
+    options: { xray?: boolean } = {}
+): TransactionResponse {
+    AWSXray.setContextMissingStrategy('LOG_ERROR');
+
+    const mysql = serverlessMysql({
+        config: defaultConfig,
+        // @ts-ignore
+        library: options.xray ? AWSXray.captureMySQL(mysqlInitial) : mysqlInitial,
+    });
+
     if (JSON.stringify(mysql.getConfig()) !== JSON.stringify(dbConfig)) {
         await mysql.quit();
     }
