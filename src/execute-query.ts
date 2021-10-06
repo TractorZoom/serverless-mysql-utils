@@ -15,6 +15,8 @@ export async function executeQuery<T>(
     dbConfig: mysqlInitial.ConnectionConfig,
     options: { xray?: boolean } = {}
 ): QueryResponse<T> {
+    AWSXray.setContextMissingStrategy('LOG_ERROR');
+
     const mysql = serverlessMysql({
         config: defaultConfig,
         // @ts-ignore
