@@ -13,7 +13,7 @@ const defaultConfig: mysqlInitial.ConnectionConfig = {
 export async function executeQuery<T>(
     query: string,
     dbConfig: mysqlInitial.ConnectionConfig,
-    options: { xray: boolean } = { xray: false }
+    options: { xray?: boolean } = {}
 ): QueryResponse<T> {
     const mysql = serverlessMysql({
         config: defaultConfig,
