@@ -1,16 +1,22 @@
-import { ConnectionConfig } from 'mysql';
+import * as initialMysql from 'mysql';
 import { QueryResponse } from './types';
 import * as serverlessMysql from 'serverless-mysql';
+import { captureMySQL } from 'aws-xray-sdk';
 
-const defaultConfig: ConnectionConfig = {
+const defaultConfig: initialMysql.ConnectionConfig = {
     database: process.env.database,
     host: process.env.host,
     password: process.env.password,
     user: process.env.user,
 };
-const mysql = serverlessMysql({ config: defaultConfig });
 
-export async function executeQuery<T>(query: string, dbConfig: ConnectionConfig): QueryResponse<T> {
+// istanbul ignore next
+const mysql = serverlessMysql({
+    config: defaultConfig,
+    library: () => captureMySQL(initialMysql),
+});
+
+export async function executeQuery<T>(query: string, dbConfig: initialMysql.ConnectionConfig): QueryResponse<T> {
     if (JSON.stringify(mysql.getConfig()) !== JSON.stringify(dbConfig)) {
         await mysql.quit();
     }
