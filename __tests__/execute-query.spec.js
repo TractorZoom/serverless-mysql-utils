@@ -72,7 +72,7 @@ describe('serverless mysql utility', () => {
         process.env.user = chance.word();
 
         // when
-        await executeQuery(mockData.query, dbConfig, { xray: true });
+        await executeQuery(mockData.query, dbConfig);
 
         // then
         expect(captureSubsegment).toHaveBeenCalledWith(mockData.query);

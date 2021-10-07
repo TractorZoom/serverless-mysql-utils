@@ -1,7 +1,6 @@
 import Chance from 'chance';
 import Mysql from 'serverless-mysql';
 import { executeTransaction } from '../src/execute-transaction';
-import { captureMySQL } from 'aws-xray-sdk';
 
 const chance = new Chance();
 const mysql = Mysql();
