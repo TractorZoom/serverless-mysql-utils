@@ -1,6 +1,6 @@
 {
     "name": "@tractorzoom/serverless-mysql-utils",
-    "version": "3.2.5",
+    "version": "4.0.1",
     "description": "Wrapper around serverless-mysql implementing standardized error handling and automatic retries",
     "main": "lib/index.js",
     "author": "@TractorZoom",
@@ -35,6 +35,7 @@
         "typescript": "4.4.2"
     },
     "dependencies": {
+        "aws-xray-sdk": "3.3.3",
         "serverless-mysql": "1.5.4"
     },
     "config": {

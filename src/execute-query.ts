@@ -1,16 +1,13 @@
-import { ConnectionConfig } from 'mysql';
+import * as mysqlInitial from 'mysql';
 import { QueryResponse } from './types';
 import * as serverlessMysql from 'serverless-mysql';
+import { mysqlServerlessConfig } from './serverless-config';
+import { captureSubsegment } from './capture-subsegments';
 
-const defaultConfig: ConnectionConfig = {
-    database: process.env.database,
-    host: process.env.host,
-    password: process.env.password,
-    user: process.env.user,
-};
-const mysql = serverlessMysql({ config: defaultConfig });
+// Must Stay Outside of Main Execution https://github.com/jeremydaly/serverless-mysql#how-to-use-this-module
+const mysql = serverlessMysql(mysqlServerlessConfig());
 
-export async function executeQuery<T>(query: string, dbConfig: ConnectionConfig): QueryResponse<T> {
+export async function executeQuery<T>(query: string, dbConfig: mysqlInitial.ConnectionConfig): QueryResponse<T> {
     if (JSON.stringify(mysql.getConfig()) !== JSON.stringify(dbConfig)) {
         await mysql.quit();
     }
@@ -35,6 +32,8 @@ export async function executeQuery<T>(query: string, dbConfig: ConnectionConfig)
             error = `${ex2}`;
         }
     } finally {
+        captureSubsegment(query);
+
         await mysql.end();
 
         return { data, error };

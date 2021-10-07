@@ -1,16 +1,15 @@
-import { ConnectionConfig } from 'mysql';
 import { TransactionResponse } from './types';
 import * as serverlessMysql from 'serverless-mysql';
+import * as mysqlInitial from 'mysql';
+import { mysqlServerlessConfig } from './serverless-config';
 
-const defaultConfig: ConnectionConfig = {
-    database: process.env.database,
-    host: process.env.host,
-    password: process.env.password,
-    user: process.env.user,
-};
-const mysql = serverlessMysql({ config: defaultConfig });
+// Must Stay Outside of Main Execution https://github.com/jeremydaly/serverless-mysql#how-to-use-this-module
+const mysql = serverlessMysql(mysqlServerlessConfig());
 
-export async function executeTransaction(queries: string[], dbConfig: ConnectionConfig): TransactionResponse {
+export async function executeTransaction(
+    queries: string[],
+    dbConfig: mysqlInitial.ConnectionConfig
+): TransactionResponse {
     if (JSON.stringify(mysql.getConfig()) !== JSON.stringify(dbConfig)) {
         await mysql.quit();
     }
