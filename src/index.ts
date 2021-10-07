@@ -1,5 +1,5 @@
-import { QueryResponse } from './src/types';
-import { executeQuery } from './src/execute-query';
-import { executeTransaction } from './src/execute-transaction';
+import { QueryResponse } from './types';
+import { executeQuery } from './execute-query';
+import { executeTransaction } from './execute-transaction';
 
 export { executeQuery, executeTransaction, QueryResponse };
