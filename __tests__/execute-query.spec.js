@@ -7,7 +7,6 @@ const chance = new Chance();
 const mysql = Mysql();
 
 jest.mock('serverless-mysql');
-jest.mock('aws-xray-sdk');
 jest.mock('../src/capture-subsegments');
 
 describe('serverless mysql utility', () => {

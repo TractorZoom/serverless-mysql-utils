@@ -10,6 +10,8 @@ export const mysqlServerlessConfig = (): Config => {
         user: process.env.user,
     };
 
+    AWSXray.setContextMissingStrategy('LOG_ERROR');
+
     return {
         config: defaultConfig,
         // @ts-ignore

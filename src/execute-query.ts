@@ -1,7 +1,6 @@
 import * as mysqlInitial from 'mysql';
 import { QueryResponse } from './types';
 import * as serverlessMysql from 'serverless-mysql';
-import * as AWSXray from 'aws-xray-sdk';
 import { mysqlServerlessConfig } from './serverless-config';
 import { captureSubsegment } from './capture-subsegments';
 
@@ -9,8 +8,6 @@ import { captureSubsegment } from './capture-subsegments';
 const mysql = serverlessMysql(mysqlServerlessConfig());
 
 export async function executeQuery<T>(query: string, dbConfig: mysqlInitial.ConnectionConfig): QueryResponse<T> {
-    AWSXray.setContextMissingStrategy('LOG_ERROR');
-
     if (JSON.stringify(mysql.getConfig()) !== JSON.stringify(dbConfig)) {
         await mysql.quit();
     }

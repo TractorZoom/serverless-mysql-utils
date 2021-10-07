@@ -6,7 +6,6 @@ const chance = new Chance();
 const mysql = Mysql();
 
 jest.mock('serverless-mysql');
-jest.mock('aws-xray-sdk');
 
 describe('execute Transaction', () => {
     let mockData;
