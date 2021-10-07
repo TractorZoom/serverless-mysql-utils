@@ -1,13 +1,14 @@
 import Chance from 'chance';
 import Mysql from 'serverless-mysql';
 import { executeQuery } from '../src/execute-query';
-import { captureMySQL } from 'aws-xray-sdk';
+import { captureSubsegment } from '../src/capture-subsegments';
 
 const chance = new Chance();
 const mysql = Mysql();
 
 jest.mock('serverless-mysql');
 jest.mock('aws-xray-sdk');
+jest.mock('../src/capture-subsegments');
 
 describe('serverless mysql utility', () => {
     let mockData;
@@ -56,7 +57,7 @@ describe('serverless mysql utility', () => {
         expect(mysql.quit).toHaveBeenCalledWith();
     });
 
-    it('should captureMysql', async () => {
+    it('should captureSubsegment', async () => {
         // given
         const dbConfig = {
             host: chance.word(),
@@ -74,7 +75,7 @@ describe('serverless mysql utility', () => {
         await executeQuery(mockData.query, dbConfig, { xray: true });
 
         // then
-        expect(captureMySQL).toHaveBeenCalledTimes(1);
+        expect(captureSubsegment).toHaveBeenCalledWith(mockData.query);
     });
 
     it('should configure mysql when the option is passed', async () => {

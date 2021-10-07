@@ -75,22 +75,6 @@ describe('execute Transaction', () => {
         expect(mysql.config).toHaveBeenCalledWith(dbConfig);
     });
 
-    it('should capture mysql', async () => {
-        // given
-        const dbConfig = {
-            host: chance.word(),
-            user: chance.word(),
-            password: chance.word(),
-            database: chance.word(),
-        };
-
-        // when
-        await executeTransaction(mockData.queries, dbConfig, { xray: true });
-
-        // then
-        expect(captureMySQL).toHaveBeenCalledTimes(1);
-    });
-
     it('should successfully query mysql on the first try', async () => {
         const response = await executeTransaction(mockData.queries);
 
