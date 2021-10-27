@@ -32,6 +32,7 @@ describe('serverless-config', () => {
 
     it('should use capture sql', async () => {
         // given
+        process.env.ENV = 'Prod';
 
         // when
         await mysqlServerlessConfig();

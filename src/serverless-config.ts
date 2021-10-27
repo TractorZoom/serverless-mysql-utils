@@ -1,6 +1,6 @@
-import * as mysqlInitial from 'mysql';
-import * as AWSXray from 'aws-xray-sdk';
 import { Config } from 'serverless-mysql';
+import * as AWSXray from 'aws-xray-sdk';
+import * as mysqlInitial from 'mysql';
 
 export const mysqlServerlessConfig = (): Config => {
     const defaultConfig: mysqlInitial.ConnectionConfig = {
@@ -10,15 +10,18 @@ export const mysqlServerlessConfig = (): Config => {
         user: process.env.user,
     };
 
-    AWSXray.setContextMissingStrategy('LOG_ERROR');
+    const isProd = process.env.ENV === 'Prod';
+
+    if (isProd) {
+        AWSXray.setContextMissingStrategy('LOG_ERROR');
+    }
 
     return {
         config: defaultConfig,
-        // @ts-ignore
-        library: AWSXray.captureMySQL(mysqlInitial),
-        onConnect: (e) => console.info('Created new database connection', e),
+        library: isProd ? (AWSXray.captureMySQL(mysqlInitial) as any) : mysqlInitial,
         onClose: (e) => console.info('Closed Database connection explicitly', e),
-        onRetry: (e) => console.info('Retry opening database connection', e),
+        onConnect: (e) => console.info('Created new database connection', e),
         onConnectError: (e) => console.error('Error creating database connection', e),
+        onRetry: (e) => console.info('Retry opening database connection', e),
     };
 };
