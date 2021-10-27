@@ -10,12 +10,16 @@ export const mysqlServerlessConfig = (): Config => {
         user: process.env.user,
     };
 
-    AWSXray.setContextMissingStrategy('LOG_ERROR');
+    const isProd = process.env.ENV === 'Prod';
+
+    if (isProd) {
+        AWSXray.setContextMissingStrategy('LOG_ERROR');
+    }
 
     return {
         config: defaultConfig,
         // @ts-ignore
-        library: AWSXray.captureMySQL(mysqlInitial),
+        library: isProd ? AWSXray.captureMySQL(mysqlInitial) : mysqlInitial,
         onConnect: (e) => console.info('Created new database connection', e),
         onClose: (e) => console.info('Closed Database connection explicitly', e),
         onRetry: (e) => console.info('Retry opening database connection', e),
