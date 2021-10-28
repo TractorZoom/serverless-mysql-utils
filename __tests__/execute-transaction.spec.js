@@ -37,10 +37,10 @@ describe('execute Transaction', () => {
     it('should quit connection if configuration passed is different than current configuration', async () => {
         // given
         const dbConfig = {
-            host: chance.word(),
-            user: chance.word(),
-            password: chance.word(),
             database: chance.word(),
+            host: chance.word(),
+            password: chance.word(),
+            user: chance.word(),
         };
 
         process.env.database = chance.word();
@@ -59,10 +59,10 @@ describe('execute Transaction', () => {
     it('should configure mysql when the option is passed', async () => {
         // given
         const dbConfig = {
-            host: chance.word(),
-            user: chance.word(),
-            password: chance.word(),
             database: chance.word(),
+            host: chance.word(),
+            password: chance.word(),
+            user: chance.word(),
         };
 
         // when

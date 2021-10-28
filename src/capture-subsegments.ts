@@ -1,7 +1,8 @@
-import { isProd } from './serverless-config';
 import * as AWSXray from 'aws-xray-sdk';
 
 export const captureSubsegment = (query) => {
+    const isProd = process.env.ENV === 'Prod';
+
     if (isProd) {
         const subs = AWSXray.getSegment().subsegments;
 

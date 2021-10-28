@@ -7,15 +7,13 @@ const chance = new Chance();
 jest.mock('aws-xray-sdk');
 
 describe('serverless-config', () => {
-    let mockData;
-
     it('should use default configs', async () => {
         // given
         const dbConfig = {
-            host: chance.word(),
-            user: chance.word(),
-            password: chance.word(),
             database: chance.word(),
+            host: chance.word(),
+            password: chance.word(),
+            user: chance.word(),
         };
 
         process.env.database = dbConfig.database;
@@ -48,6 +46,7 @@ describe('serverless-config', () => {
 
         // when
         const config = await mysqlServerlessConfig();
+
         config.onConnect(e);
 
         // then
@@ -61,6 +60,7 @@ describe('serverless-config', () => {
 
         // when
         const config = await mysqlServerlessConfig();
+
         config.onClose(e);
 
         // then
@@ -74,6 +74,7 @@ describe('serverless-config', () => {
 
         // when
         const config = await mysqlServerlessConfig();
+
         config.onRetry(e);
 
         // then
@@ -87,6 +88,7 @@ describe('serverless-config', () => {
 
         // when
         const config = await mysqlServerlessConfig();
+
         config.onConnectError(e);
 
         // then

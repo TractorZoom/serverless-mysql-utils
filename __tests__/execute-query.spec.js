@@ -1,7 +1,7 @@
 import Chance from 'chance';
 import Mysql from 'serverless-mysql';
-import { executeQuery } from '../src/execute-query';
 import { captureSubsegment } from '../src/capture-subsegments';
+import { executeQuery } from '../src/execute-query';
 
 const chance = new Chance();
 const mysql = Mysql();
@@ -37,10 +37,10 @@ describe('serverless mysql utility', () => {
     it('should quit connection if configuration passed is different than current configuration', async () => {
         // given
         const dbConfig = {
-            host: chance.word(),
-            user: chance.word(),
-            password: chance.word(),
             database: chance.word(),
+            host: chance.word(),
+            password: chance.word(),
+            user: chance.word(),
         };
 
         process.env.database = chance.word();
@@ -59,10 +59,10 @@ describe('serverless mysql utility', () => {
     it('should captureSubsegment', async () => {
         // given
         const dbConfig = {
-            host: chance.word(),
-            user: chance.word(),
-            password: chance.word(),
             database: chance.word(),
+            host: chance.word(),
+            password: chance.word(),
+            user: chance.word(),
         };
 
         process.env.database = chance.word();
@@ -80,10 +80,10 @@ describe('serverless mysql utility', () => {
     it('should configure mysql when the option is passed', async () => {
         // given
         const dbConfig = {
-            host: chance.word(),
-            user: chance.word(),
-            password: chance.word(),
             database: chance.word(),
+            host: chance.word(),
+            password: chance.word(),
+            user: chance.word(),
         };
 
         // when
