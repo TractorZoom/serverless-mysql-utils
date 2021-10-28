@@ -1,15 +1,18 @@
+import { isProd } from './serverless-config';
 import * as AWSXray from 'aws-xray-sdk';
 
 export const captureSubsegment = (query) => {
-    const subs = AWSXray.getSegment().subsegments;
+    if (isProd) {
+        const subs = AWSXray.getSegment().subsegments;
 
-    console.info('available segements', { subs, query });
+        console.info('available segements', { query, subs });
 
-    if (subs && subs.length > 0) {
-        var sqlSub = subs[subs.length - 1];
-        // @ts-ignore
-        sqlSub.sql.sanitized_query = query;
+        if (subs && subs.length > 0) {
+            const sqlSub: any = subs[subs.length - 1];
+
+            sqlSub.sql.sanitized_query = query;
+        }
+
+        return subs;
     }
-
-    return subs;
 };
