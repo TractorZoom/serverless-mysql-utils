@@ -7,7 +7,7 @@ import * as serverlessMysql from 'serverless-mysql';
 // Must Stay Outside of Main Execution https://github.com/jeremydaly/serverless-mysql#how-to-use-this-module
 const mysql = serverlessMysql(mysqlServerlessConfig());
 
-export async function executeQuery<T>(query: string, dbConfig: mysqlInitial.ConnectionConfig): QueryResponse<T> {
+async function wrap<T>(query: () => Promise<T>, dbConfig: mysqlInitial.ConnectionConfig): QueryResponse<T> {
     if (JSON.stringify(mysql.getConfig()) !== JSON.stringify(dbConfig)) {
         await mysql.quit();
     }
@@ -20,22 +20,40 @@ export async function executeQuery<T>(query: string, dbConfig: mysqlInitial.Conn
     let error;
 
     try {
-        data = await mysql.query<T>(query);
+        data = await query();
     } catch (ex) {
         console.error('query failed: ', ex);
 
         try {
-            data = await mysql.query<T>(query);
+            data = await query();
         } catch (ex2) {
             console.error('retried query failed: ', ex2);
 
             error = `${ex2}`;
         }
     } finally {
-        captureSubsegment(query);
-
         await mysql.end();
 
         return { data, error };
     }
+}
+
+export async function executeQueryWithParams<T>(
+    query: string,
+    params: any[] | any,
+    dbConfig: mysqlInitial.ConnectionConfig
+): QueryResponse<T> {
+    const response = await wrap(() => mysql.query<T>(query, params), dbConfig);
+
+    captureSubsegment(query);
+
+    return response;
+}
+
+export async function executeQuery<T>(query: string, dbConfig: mysqlInitial.ConnectionConfig): QueryResponse<T> {
+    const response = await wrap(() => mysql.query<T>(query), dbConfig);
+
+    captureSubsegment(query);
+
+    return response;
 }
