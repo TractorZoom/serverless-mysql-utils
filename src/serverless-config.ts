@@ -19,9 +19,5 @@ export const mysqlServerlessConfig = (): Config => {
     return {
         config: defaultConfig,
         library: isProd ? (AWSXray.captureMySQL(mysqlInitial) as any) : mysqlInitial,
-        onClose: (e) => console.info('Closed Database connection explicitly', e),
-        onConnect: (e) => console.info('Created new database connection', e),
-        onConnectError: (e) => console.error('Error creating database connection', e),
-        onRetry: (e) => console.info('Retry opening database connection', e),
     };
 };
