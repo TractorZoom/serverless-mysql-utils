@@ -104,24 +104,12 @@ describe('serverless mysql utility', () => {
             expect(response.data).toEqual(mockData.queryResponse);
         });
 
-        it('should fail the first query and succeed on the second', async () => {
+        it('should fail the first query and return an error', async () => {
             mysql.query.mockRejectedValueOnce(new Error(mockData.rejectError));
 
             const response = await executeQuery(mockData.query);
 
-            expect(mysql.query).toHaveBeenCalledTimes(2);
-            expect(mysql.query).toHaveBeenCalledWith(mockData.query);
-
-            expect(response.data).toEqual(mockData.queryResponse);
-        });
-
-        it('should fail the first query and return an error when the second query fails', async () => {
-            mysql.query.mockRejectedValueOnce(new Error(mockData.rejectError));
-            mysql.query.mockRejectedValueOnce(new Error(mockData.rejectError));
-
-            const response = await executeQuery(mockData.query);
-
-            expect(mysql.query).toHaveBeenCalledTimes(2);
+            expect(mysql.query).toHaveBeenCalledTimes(1);
             expect(mysql.query).toHaveBeenCalledWith(mockData.query);
 
             expect(response).toEqual(mockData.errorMessage);
@@ -229,24 +217,12 @@ describe('serverless mysql utility', () => {
             expect(response.data).toEqual(mockData.queryResponse);
         });
 
-        it('should fail the first query and succeed on the second', async () => {
-            mysql.query.mockRejectedValueOnce(new Error(mockData.rejectError));
-
-            const response = await executeQueryWithParams(mockData.query, ['blah']);
-
-            expect(mysql.query).toHaveBeenCalledTimes(2);
-            expect(mysql.query).toHaveBeenCalledWith(mockData.query, ['blah']);
-
-            expect(response.data).toEqual(mockData.queryResponse);
-        });
-
         it('should fail the first query and return an error when the second query fails', async () => {
             mysql.query.mockRejectedValueOnce(new Error(mockData.rejectError));
-            mysql.query.mockRejectedValueOnce(new Error(mockData.rejectError));
 
             const response = await executeQueryWithParams(mockData.query, ['blah']);
 
-            expect(mysql.query).toHaveBeenCalledTimes(2);
+            expect(mysql.query).toHaveBeenCalledTimes(1);
             expect(mysql.query).toHaveBeenCalledWith(mockData.query, ['blah']);
 
             expect(response).toEqual(mockData.errorMessage);
