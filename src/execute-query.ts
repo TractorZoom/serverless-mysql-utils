@@ -24,13 +24,7 @@ async function wrap<T>(query: () => Promise<T>, dbConfig: mysqlInitial.Connectio
     } catch (ex) {
         console.error('query failed: ', ex);
 
-        try {
-            data = await query();
-        } catch (ex2) {
-            console.error('retried query failed: ', ex2);
-
-            error = `${ex2}`;
-        }
+        error = `${ex}`;
     } finally {
         await mysql.end();
 
