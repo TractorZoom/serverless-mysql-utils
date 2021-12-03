@@ -24,7 +24,7 @@
         "@semantic-release/release-notes-generator": "9.0.3",
         "@tractorzoom/eslint-config": "0.3.2",
         "@tractorzoom/jest-config": "0.3.3",
-        "@types/node": "14.17.34",
+        "@types/node": "14.18.0",
         "chance": "1.1.8",
         "commitizen": "4.2.4",
         "husky": "4.3.8",
