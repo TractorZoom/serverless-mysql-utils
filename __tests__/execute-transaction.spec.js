@@ -94,4 +94,17 @@ describe('execute Transaction', () => {
         expect(mysql.end).toHaveBeenCalledTimes(1);
         expect(mysql.end).toHaveBeenCalledWith();
     });
+
+    it('should successfully query mysql with transaction commands when readonly is true', async () => {
+        mysql.query.mockResolvedValue(data);
+
+        await executeTransaction(mockData.queries, null, true);
+
+        const data = chance.word();
+
+        expect(mysql.query).toHaveBeenCalledTimes(mockData.queries.length + 3);
+        expect(mysql.query).toHaveBeenNthCalledWith(1, 'SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED');
+        expect(mysql.query).toHaveBeenNthCalledWith(2, 'START TRANSACTION');
+        expect(mysql.query).toHaveBeenNthCalledWith(mockData.queries.length + 3, 'COMMIT');
+    });
 });

@@ -1,10 +1,8 @@
 export const readOnlyTransaction = (mysql) => {
     const queries = []; // keep track of queries
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    let rollback = () => {}; // default rollback event
 
     // Commit transaction by running queries
-    const commit = async (queries, rollback) => {
+    const commit = async (queries) => {
         const results = []; // keep track of results
 
         await mysql.query('SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED');
@@ -15,7 +13,7 @@ export const readOnlyTransaction = (mysql) => {
         // Loop through queries
         for (let i = 0; i < queries.length; i++) {
             // Execute the queries, pass the rollback as context
-            const result = await mysql.query.apply({ rollback }, queries[i](results[results.length - 1], results));
+            const result = await mysql.query.apply({}, queries[i](results[results.length - 1], results));
 
             // Add the result to the main results accumulator
 
@@ -31,21 +29,10 @@ export const readOnlyTransaction = (mysql) => {
 
     return {
         commit: async function () {
-            return await commit(queries, rollback);
+            return await commit(queries);
         },
         query: function (...args) {
-            if (typeof args[0] === 'function') {
-                queries.push(args[0]);
-            } else {
-                queries.push(() => [...args]);
-            }
-
-            return this;
-        },
-        rollback: function (fn) {
-            if (typeof fn === 'function') {
-                rollback = fn;
-            }
+            queries.push(() => [...args]);
 
             return this;
         },
