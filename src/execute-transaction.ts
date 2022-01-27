@@ -1,5 +1,6 @@
 import { TransactionResponse } from './types';
 import { mysqlServerlessConfig } from './serverless-config';
+import { readOnlyTransaction } from './read-only-transaction';
 import * as mysqlInitial from 'mysql';
 import * as serverlessMysql from 'serverless-mysql';
 
@@ -8,7 +9,8 @@ const mysql = serverlessMysql(mysqlServerlessConfig());
 
 export async function executeTransaction(
     queries: string[],
-    dbConfig: mysqlInitial.ConnectionConfig
+    dbConfig: mysqlInitial.ConnectionConfig,
+    readOnly?: boolean
 ): TransactionResponse {
     if (JSON.stringify(mysql.getConfig()) !== JSON.stringify(dbConfig)) {
         await mysql.quit();
@@ -22,11 +24,19 @@ export async function executeTransaction(
     let error;
 
     try {
-        const transaction = mysql.transaction();
+        if (readOnly) {
+            const transaction = readOnlyTransaction(mysql);
 
-        queries.map((query) => transaction.query(query));
+            queries.map((query) => transaction.query(query));
 
-        data = await transaction.commit();
+            data = await transaction.commit();
+        } else {
+            const transaction = mysql.transaction();
+
+            queries.map((query) => transaction.query(query));
+
+            data = await transaction.commit();
+        }
     } catch (ex) {
         console.error('query failed: ', ex);
         error = `${ex}`;
