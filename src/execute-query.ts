@@ -1,6 +1,7 @@
 import { QueryResponse } from './types';
 import { captureSubsegment } from './capture-subsegments';
 import { mysqlServerlessConfig } from './serverless-config';
+import { v4 as uuidv4 } from 'uuid';
 import * as mysqlInitial from 'mysql';
 import * as serverlessMysql from 'serverless-mysql';
 
@@ -18,6 +19,10 @@ async function wrap<T>(query: () => Promise<T>, dbConfig: mysqlInitial.Connectio
 
     let data: T;
     let error;
+    const id = uuidv4();
+    const logName = `Query Time - ${id}`;
+
+    console.time(logName);
 
     try {
         data = await query();
@@ -26,6 +31,8 @@ async function wrap<T>(query: () => Promise<T>, dbConfig: mysqlInitial.Connectio
 
         error = `${ex}`;
     } finally {
+        console.timeEnd(logName);
+
         await mysql.end();
 
         return { data, error };

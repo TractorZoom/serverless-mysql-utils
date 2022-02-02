@@ -10,7 +10,7 @@ export const mysqlServerlessConfig = (): Config => {
         user: process.env.user,
     };
 
-    const isProd = process.env.ENV === 'Prod';
+    const isProd = process.env.ENV === 'Prod' && process.env.IGNORE_XRAY !== 'true';
 
     if (isProd) {
         AWSXray.setContextMissingStrategy('LOG_ERROR');
