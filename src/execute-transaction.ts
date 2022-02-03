@@ -1,8 +1,8 @@
 import { TransactionResponse } from './types';
 import { mysqlServerlessConfig } from './serverless-config';
 import { readOnlyTransaction } from './read-only-transaction';
+import serverlessMysql from 'serverless-mysql';
 import * as mysqlInitial from 'mysql';
-import * as serverlessMysql from 'serverless-mysql';
 
 // Must Stay Outside of Main Execution https://github.com/jeremydaly/serverless-mysql#how-to-use-this-module
 const mysql = serverlessMysql(mysqlServerlessConfig());

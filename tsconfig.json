@@ -5,6 +5,7 @@
         "noImplicitAny": false,
         "target": "es2019",
         "outDir": "./lib",
-        "declaration": true
+        "declaration": true,
+        "esModuleInterop": true
     }
 }

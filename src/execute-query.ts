@@ -1,9 +1,9 @@
 import { QueryResponse } from './types';
 import { captureSubsegment } from './capture-subsegments';
 import { mysqlServerlessConfig } from './serverless-config';
+import serverlessMysql from 'serverless-mysql';
 import { v4 as uuidv4 } from 'uuid';
 import * as mysqlInitial from 'mysql';
-import * as serverlessMysql from 'serverless-mysql';
 
 // Must Stay Outside of Main Execution https://github.com/jeremydaly/serverless-mysql#how-to-use-this-module
 const mysql = serverlessMysql(mysqlServerlessConfig());

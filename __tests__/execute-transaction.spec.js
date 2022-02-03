@@ -96,11 +96,11 @@ describe('execute Transaction', () => {
     });
 
     it('should successfully query mysql with transaction commands when readonly is true', async () => {
+        const data = chance.word();
+
         mysql.query.mockResolvedValue(data);
 
         await executeTransaction(mockData.queries, null, true);
-
-        const data = chance.word();
 
         expect(mysql.query).toHaveBeenCalledTimes(mockData.queries.length + 3);
         expect(mysql.query).toHaveBeenNthCalledWith(1, 'SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED');
