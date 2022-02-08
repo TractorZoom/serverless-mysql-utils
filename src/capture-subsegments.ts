@@ -1,7 +1,7 @@
 import * as AWSXray from 'aws-xray-sdk';
 
 export const captureSubsegment = (query) => {
-    const isProd = process.env.ENV === 'Prod';
+    const isProd = process.env.ENV === 'Prod' && process.env.IGNORE_XRAY !== 'true';
 
     if (isProd) {
         const subs = AWSXray.getSegment().subsegments;
