@@ -1,47 +1,30 @@
+import { ConnectionOptions, PoolConnection } from 'mysql2/promise';
 import { TransactionResponse } from './types';
-import { mysqlServerlessConfig } from './serverless-config';
-import { readOnlyTransaction } from './read-only-transaction';
-import * as mysqlInitial from 'mysql';
-import * as serverlessMysql from 'serverless-mysql';
+import { getPool } from './pools';
 
-// Must Stay Outside of Main Execution https://github.com/jeremydaly/serverless-mysql#how-to-use-this-module
-const mysql = serverlessMysql(mysqlServerlessConfig());
-
-export async function executeTransaction(
-    queries: string[],
-    dbConfig: mysqlInitial.ConnectionConfig,
-    readOnly?: boolean
-): TransactionResponse {
-    if (JSON.stringify(mysql.getConfig()) !== JSON.stringify(dbConfig)) {
-        await mysql.quit();
-    }
-
-    if (dbConfig) {
-        mysql.config(dbConfig);
-    }
-
-    let data: any[];
+export async function executeTransaction(queries: string[], dbConfig: ConnectionOptions): TransactionResponse {
+    const data: any[] = [];
     let error;
+    let conn: PoolConnection = null;
 
     try {
-        if (readOnly) {
-            const transaction = readOnlyTransaction(mysql);
+        const pool = await getPool(dbConfig);
 
-            queries.map((query) => transaction.query(query));
+        conn = await pool.getConnection();
+        await conn.beginTransaction();
 
-            data = await transaction.commit();
-        } else {
-            const transaction = mysql.transaction();
+        for (const query of queries) {
+            const response = await conn.query(query);
 
-            queries.map((query) => transaction.query(query));
-
-            data = await transaction.commit();
+            data.push(response);
         }
+        await conn.commit();
     } catch (ex) {
+        if (conn) await conn.rollback();
         console.error('query failed: ', ex);
         error = `${ex}`;
     } finally {
-        await mysql.end();
+        if (conn) await conn.release();
 
         return { data, error };
     }
