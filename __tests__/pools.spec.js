@@ -17,7 +17,7 @@ describe('pools helper', () => {
 
         const pool = await getPool(config);
 
-        expect(createPool).toHaveBeenCalledWith(config);
+        expect(createPool).toHaveBeenCalledTimes(1);
         expect(pool).toBe(mockPool);
     });
 
@@ -34,7 +34,6 @@ describe('pools helper', () => {
         const pool2 = await getPool(config);
 
         expect(createPool).toHaveBeenCalledTimes(1);
-        expect(createPool).toHaveBeenCalledWith(config);
         expect(pool1).toBe(mockPool);
         expect(pool2).toBe(mockPool);
     });
