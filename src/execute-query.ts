@@ -1,21 +1,19 @@
+import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
+import { ConnectionOptions } from 'mysql2';
 import { QueryResponse } from './types';
-import { captureSubsegment } from './capture-subsegments';
-import { mysqlServerlessConfig } from './serverless-config';
+import { getPool } from './pools';
 import { v4 as uuidv4 } from 'uuid';
-import * as mysqlInitial from 'mysql';
-import * as serverlessMysql from 'serverless-mysql';
 
-// Must Stay Outside of Main Execution https://github.com/jeremydaly/serverless-mysql#how-to-use-this-module
-const mysql = serverlessMysql(mysqlServerlessConfig());
+type RowData = {
+    [name: string]: any;
+};
 
-async function wrap<T>(query: () => Promise<T>, dbConfig: mysqlInitial.ConnectionConfig): QueryResponse<T> {
-    if (JSON.stringify(mysql.getConfig()) !== JSON.stringify(dbConfig)) {
-        await mysql.quit();
-    }
-
-    if (dbConfig) {
-        mysql.config(dbConfig);
-    }
+async function wrap<T extends RowData[] | ResultSetHeader>(
+    query: string,
+    params: any[] | any,
+    dbConfig: ConnectionOptions
+): QueryResponse<T> {
+    const pool = await getPool(dbConfig);
 
     let data: T;
     let error;
@@ -25,7 +23,7 @@ async function wrap<T>(query: () => Promise<T>, dbConfig: mysqlInitial.Connectio
     console.time(logName);
 
     try {
-        data = await query();
+        data = (await pool.execute<T & RowDataPacket[]>(query, params))[0];
     } catch (ex) {
         console.error('query failed: ', ex);
 
@@ -33,28 +31,21 @@ async function wrap<T>(query: () => Promise<T>, dbConfig: mysqlInitial.Connectio
     } finally {
         console.timeEnd(logName);
 
-        await mysql.end();
-
         return { data, error };
     }
 }
 
-export async function executeQueryWithParams<T>(
+export async function executeQueryWithParams<T extends RowData[] | ResultSetHeader>(
     query: string,
     params: any[] | any,
-    dbConfig: mysqlInitial.ConnectionConfig
+    dbConfig: ConnectionOptions
 ): QueryResponse<T> {
-    const response = await wrap(() => mysql.query<T>(query, params), dbConfig);
-
-    captureSubsegment(query);
-
-    return response;
+    return await wrap(query, params, dbConfig);
 }
 
-export async function executeQuery<T>(query: string, dbConfig: mysqlInitial.ConnectionConfig): QueryResponse<T> {
-    const response = await wrap(() => mysql.query<T>(query), dbConfig);
-
-    captureSubsegment(query);
-
-    return response;
+export async function executeQuery<T extends RowData[] | ResultSetHeader>(
+    query: string,
+    dbConfig: ConnectionOptions
+): QueryResponse<T> {
+    return await wrap(query, null, dbConfig);
 }

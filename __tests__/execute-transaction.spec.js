@@ -1,59 +1,16 @@
 import Chance from 'chance';
-import Mysql from 'serverless-mysql';
 import { executeTransaction } from '../src/execute-transaction';
+import { getPool } from '../src/pools';
 
 const chance = new Chance();
-const mysql = Mysql();
 
-jest.mock('serverless-mysql');
+jest.mock('../src/pools');
 
 describe('execute Transaction', () => {
-    let mockData;
+    let mockPool = {};
 
     beforeEach(() => {
-        const rejectError = chance.string();
-
-        mockData = {
-            errorMessage: { error: `Error: ${rejectError}` },
-            queries: chance.n(chance.string, chance.d6()),
-            queryResponse: chance.string(),
-            rejectError,
-        };
-
-        mysql.end.mockResolvedValue();
-        mysql.transaction.mockReturnValue(mysql);
-        mysql.query.mockReturnValue();
-        mysql.commit.mockResolvedValue(mockData.queryResponse);
-        mysql.quit.mockResolvedValue();
-    });
-
-    afterEach(() => {
-        mysql.config.mockRestore();
-        mysql.end.mockRestore();
-        mysql.quit.mockRestore();
-        mysql.query.mockRestore();
-    });
-
-    it('should quit connection if configuration passed is different than current configuration', async () => {
-        // given
-        const dbConfig = {
-            database: chance.word(),
-            host: chance.word(),
-            password: chance.word(),
-            user: chance.word(),
-        };
-
-        process.env.database = chance.word();
-        process.env.host = chance.word();
-        process.env.password = chance.word();
-        process.env.user = chance.word();
-
-        // when
-        await executeTransaction(mockData.queries, dbConfig);
-
-        // then
-        expect(mysql.quit).toHaveBeenCalledTimes(1);
-        expect(mysql.quit).toHaveBeenCalledWith();
+        getPool.mockResolvedValue(mockPool);
     });
 
     it('should configure mysql when the option is passed', async () => {
@@ -64,47 +21,70 @@ describe('execute Transaction', () => {
             password: chance.word(),
             user: chance.word(),
         };
+        const queries = [];
 
         // when
-        await executeTransaction(mockData.queries, dbConfig);
+        await executeTransaction(queries, dbConfig);
 
         // then
-        expect(mysql.config).toHaveBeenCalledTimes(1);
-        expect(mysql.config).toHaveBeenCalledWith(dbConfig);
+        expect(getPool).toHaveBeenCalledTimes(1);
+        expect(getPool).toHaveBeenCalledWith(dbConfig);
     });
 
     it('should successfully query mysql on the first try', async () => {
-        const response = await executeTransaction(mockData.queries);
+        // given
+        const conn = {
+            beginTransaction: jest.fn(),
+            commit: jest.fn(),
+            query: jest.fn(),
+            release: jest.fn(),
+        };
 
-        expect(mysql.query).toHaveBeenCalledTimes(mockData.queries.length);
-        expect(response.data).toEqual(mockData.queryResponse);
+        mockPool.getConnection = jest.fn().mockResolvedValue(conn);
+
+        const queries = chance.n(chance.string, 5);
+        const data = chance.string();
+
+        conn.query.mockResolvedValue(data);
+
+        // when
+        const response = await executeTransaction(queries);
+
+        // then
+        expect(conn.beginTransaction).toHaveBeenCalledTimes(1);
+        expect(conn.commit).toHaveBeenCalledTimes(1);
+        expect(conn.release).toHaveBeenCalledTimes(1);
+        expect(conn.query).toHaveBeenCalledTimes(5);
+        expect(response.data).toEqual(Array(5).fill(data));
     });
 
     it('should return error', async () => {
-        mysql.commit.mockRejectedValue(new Error(mockData.rejectError));
+        // given
+        const conn = {
+            beginTransaction: jest.fn(),
+            commit: jest.fn(),
+            query: jest.fn(),
+            release: jest.fn(),
+            rollback: jest.fn(),
+        };
 
-        const response = await executeTransaction(mockData.queries);
+        mockPool.getConnection = jest.fn().mockResolvedValue(conn);
 
-        expect(response).toEqual(mockData.errorMessage);
-    });
+        const queries = chance.n(chance.string, 5);
+        const error = chance.string();
 
-    it('should end the connection', async () => {
-        await executeTransaction(mockData.queries);
+        conn.query.mockRejectedValue(error);
 
-        expect(mysql.end).toHaveBeenCalledTimes(1);
-        expect(mysql.end).toHaveBeenCalledWith();
-    });
+        // when
+        const response = await executeTransaction(queries);
 
-    it('should successfully query mysql with transaction commands when readonly is true', async () => {
-        mysql.query.mockResolvedValue(data);
-
-        await executeTransaction(mockData.queries, null, true);
-
-        const data = chance.word();
-
-        expect(mysql.query).toHaveBeenCalledTimes(mockData.queries.length + 3);
-        expect(mysql.query).toHaveBeenNthCalledWith(1, 'SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED');
-        expect(mysql.query).toHaveBeenNthCalledWith(2, 'START TRANSACTION');
-        expect(mysql.query).toHaveBeenNthCalledWith(mockData.queries.length + 3, 'COMMIT');
+        // then
+        expect(conn.beginTransaction).toHaveBeenCalledTimes(1);
+        expect(conn.commit).toHaveBeenCalledTimes(0);
+        expect(conn.release).toHaveBeenCalledTimes(1);
+        expect(conn.query).toHaveBeenCalledTimes(1);
+        expect(response.data).toEqual([]);
+        expect(response.error).toEqual(error);
+        expect(conn.rollback).toHaveBeenCalledTimes(1);
     });
 });
