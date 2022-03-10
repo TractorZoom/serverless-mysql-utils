@@ -1,10 +1,12 @@
 import { Chance } from 'chance';
-import { createPool } from 'mysql2/promise';
+import { createPool } from 'mysql2';
 import { getPool } from '../src/pools';
 
 const chance = new Chance();
 
-jest.mock('mysql2/promise');
+jest.mock('mysql2', () => ({
+    createPool: jest.fn(),
+}));
 
 describe('pools helper', () => {
     it('should get a new pool if one doesnt exist in cache', async () => {
@@ -13,7 +15,7 @@ describe('pools helper', () => {
         };
         const mockPool = { something: chance.string() };
 
-        createPool.mockReturnValueOnce(mockPool);
+        createPool.mockReturnValueOnce({ promise: () => mockPool });
 
         const pool = await getPool(config);
 
@@ -28,7 +30,7 @@ describe('pools helper', () => {
 
         const mockPool = { something: chance.string() };
 
-        createPool.mockReturnValueOnce(mockPool);
+        createPool.mockReturnValueOnce({ promise: () => mockPool });
 
         const pool1 = await getPool(config);
         const pool2 = await getPool(config);

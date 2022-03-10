@@ -1,4 +1,5 @@
-import { ConnectionOptions, Pool, createPool } from 'mysql2/promise';
+import { ConnectionOptions, createPool } from 'mysql2';
+import { Pool } from 'mysql2/promise';
 
 const _pools: { [host: string]: Pool } = {};
 
@@ -19,7 +20,7 @@ export const getPool = async (config: ConnectionOptions): Promise<Pool> => {
     const pool = await createPool({
         ...config,
         typeCast,
-    });
+    }).promise();
 
     _pools[config.host] = pool;
 
