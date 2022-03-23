@@ -1,14 +1,16 @@
 import { ConnectionOptions, createPool } from 'mysql2';
 import { Pool } from 'mysql2/promise';
 
-const _pools: { [host: string]: Pool } = {};
+const _pools: { [cacheKey: string]: Pool } = {};
 
 export const getPool = async (config: ConnectionOptions): Promise<Pool> => {
-    if (_pools[config.host]) return _pools[config.host];
+    const cacheKey = config.host + ':' + config.database;
+
+    if (_pools[cacheKey]) return _pools[cacheKey];
 
     const pool = await createPool(config).promise();
 
-    _pools[config.host] = pool;
+    _pools[cacheKey] = pool;
 
     return pool;
 };
