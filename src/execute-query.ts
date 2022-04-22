@@ -1,6 +1,6 @@
-import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 import { ConnectionOptions } from 'mysql2';
 import { QueryResponse } from './types';
+import { RowDataPacket } from 'mysql2/promise';
 import { getPool } from './pools';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -8,7 +8,9 @@ type RowData = {
     [name: string]: any;
 };
 
-async function wrap<T extends RowData[] | ResultSetHeader>(
+type QueryInfo = { affectedRows?: number; insertId?: number };
+
+async function wrap<T extends RowData[] | QueryInfo>(
     query: string,
     params: any[] | any,
     dbConfig: ConnectionOptions
@@ -35,7 +37,7 @@ async function wrap<T extends RowData[] | ResultSetHeader>(
     }
 }
 
-export async function executeQueryWithParams<T extends RowData[] | ResultSetHeader>(
+export async function executeQueryWithParams<T extends RowData[] | QueryInfo>(
     query: string,
     params: any[] | any,
     dbConfig: ConnectionOptions
@@ -43,7 +45,7 @@ export async function executeQueryWithParams<T extends RowData[] | ResultSetHead
     return await wrap(query, params, dbConfig);
 }
 
-export async function executeQuery<T extends RowData[] | ResultSetHeader>(
+export async function executeQuery<T extends RowData[] | QueryInfo>(
     query: string,
     dbConfig: ConnectionOptions
 ): QueryResponse<T> {
