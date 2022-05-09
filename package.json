@@ -1,6 +1,6 @@
 {
     "name": "@tractorzoom/serverless-mysql-utils",
-    "version": "5.0.8",
+    "version": "5.0.9",
     "description": "Wrapper around serverless-mysql implementing standardized error handling and automatic retries",
     "main": "lib/index.js",
     "author": "@TractorZoom",
