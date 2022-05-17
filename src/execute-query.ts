@@ -14,7 +14,12 @@ async function wrap<T extends RowData[] | QueryInfo>(
     params: any[] | any,
     dbConfig: ConnectionOptions
 ): QueryResponse<T> {
-    const connection = await createConnection(dbConfig);
+    const connection = await createConnection({
+        database: dbConfig.database,
+        host: dbConfig.host,
+        password: dbConfig.password,
+        user: dbConfig.user,
+    });
 
     let data: T;
     let error;

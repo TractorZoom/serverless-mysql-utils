@@ -7,7 +7,12 @@ export async function executeTransaction(queries: string[], dbConfig: Connection
     let conn: Connection = null;
 
     try {
-        conn = await createConnection(dbConfig);
+        conn = await createConnection({
+            database: dbConfig.database,
+            host: dbConfig.host,
+            password: dbConfig.password,
+            user: dbConfig.user,
+        });
 
         await conn.beginTransaction();
 

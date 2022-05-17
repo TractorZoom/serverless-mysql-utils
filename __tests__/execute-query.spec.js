@@ -91,13 +91,20 @@ describe('serverless mysql utility', () => {
         });
 
         it('should successfully query mysql on the first try', async () => {
+            const dbConfig = {
+                database: chance.word(),
+                host: chance.word(),
+                password: chance.word(),
+                user: chance.word(),
+            };
+
             const params = chance.n(chance.string, 6);
             const query = chance.string();
             const data = chance.n(chance.string, 6);
 
             mockPool.execute = jest.fn().mockResolvedValue([data, null]);
 
-            const response = await executeQueryWithParams(query, params);
+            const response = await executeQueryWithParams(query, params, dbConfig);
 
             expect(mockPool.execute).toHaveBeenCalledWith(query, params);
 
@@ -105,13 +112,19 @@ describe('serverless mysql utility', () => {
         });
 
         it('should fail the first query and return an error when the second query fails', async () => {
+            const dbConfig = {
+                database: chance.word(),
+                host: chance.word(),
+                password: chance.word(),
+                user: chance.word(),
+            };
             const params = chance.n(chance.string, 6);
             const query = chance.string();
             const error = chance.string();
 
             mockPool.execute = jest.fn().mockRejectedValue(error);
 
-            const response = await executeQueryWithParams(query, params);
+            const response = await executeQueryWithParams(query, params, dbConfig);
 
             expect(mockPool.execute).toHaveBeenCalledWith(query, params);
 

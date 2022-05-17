@@ -41,13 +41,19 @@ describe('execute Transaction', () => {
 
     it('should successfully query mysql on the first try', async () => {
         // given
+        const dbConfig = {
+            database: chance.word(),
+            host: chance.word(),
+            password: chance.word(),
+            user: chance.word(),
+        };
         const queries = chance.n(chance.string, 5);
         const data = chance.string();
 
         conn.query.mockResolvedValue(data);
 
         // when
-        const response = await executeTransaction(queries);
+        const response = await executeTransaction(queries, dbConfig);
 
         // then
         expect(conn.beginTransaction).toHaveBeenCalledTimes(1);
@@ -59,13 +65,19 @@ describe('execute Transaction', () => {
 
     it('should return error', async () => {
         // given
+        const dbConfig = {
+            database: chance.word(),
+            host: chance.word(),
+            password: chance.word(),
+            user: chance.word(),
+        };
         const queries = chance.n(chance.string, 5);
         const error = chance.string();
 
         conn.query.mockRejectedValue(error);
 
         // when
-        const response = await executeTransaction(queries);
+        const response = await executeTransaction(queries, dbConfig);
 
         // then
         expect(conn.beginTransaction).toHaveBeenCalledTimes(1);
