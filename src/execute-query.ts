@@ -1,7 +1,7 @@
 import { ConnectionOptions } from 'mysql2';
 import { QueryResponse } from './types';
 import { RowDataPacket } from 'mysql2/promise';
-import { createConnection } from 'mysql2/promise';
+import { getPool } from './pools';
 
 type RowData = {
     [name: string]: any;
@@ -14,7 +14,7 @@ async function wrap<T extends RowData[] | QueryInfo>(
     params: any[] | any,
     dbConfig: ConnectionOptions
 ): QueryResponse<T> {
-    const connection = await createConnection({
+    const pool = await getPool({
         database: dbConfig.database,
         host: dbConfig.host,
         password: dbConfig.password,
@@ -26,9 +26,9 @@ async function wrap<T extends RowData[] | QueryInfo>(
 
     try {
         if (params) {
-            data = (await connection.execute<T & RowDataPacket[]>(query, params))[0];
+            data = (await pool.execute<T & RowDataPacket[]>(query, params))[0];
         } else {
-            data = (await connection.query<T & RowDataPacket[]>(query))[0];
+            data = (await pool.query<T & RowDataPacket[]>(query))[0];
         }
     } catch (ex) {
         console.error('query failed: ', ex);

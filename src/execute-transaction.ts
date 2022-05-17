@@ -1,18 +1,21 @@
-import { Connection, ConnectionOptions, createConnection } from 'mysql2/promise';
+import { ConnectionOptions, PoolConnection } from 'mysql2/promise';
 import { TransactionResponse } from './types';
+import { getPool } from './pools';
 
 export async function executeTransaction(queries: string[], dbConfig: ConnectionOptions): TransactionResponse {
     const data: any[] = [];
     let error;
-    let conn: Connection = null;
+    let conn: PoolConnection = null;
 
     try {
-        conn = await createConnection({
+        const pool = await getPool({
             database: dbConfig.database,
             host: dbConfig.host,
             password: dbConfig.password,
             user: dbConfig.user,
         });
+
+        conn = await pool.getConnection();
 
         await conn.beginTransaction();
 
@@ -27,7 +30,7 @@ export async function executeTransaction(queries: string[], dbConfig: Connection
         console.error('query failed: ', ex);
         error = `${ex}`;
     } finally {
-        if (conn) await conn.end();
+        if (conn) await conn.release();
 
         return { data, error };
     }
