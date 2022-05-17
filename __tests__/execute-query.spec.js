@@ -1,17 +1,35 @@
 import { executeQuery, executeQueryWithParams } from '../src/execute-query';
 import Chance from 'chance';
-import { getPool } from '../src/pools';
+import { createConnection } from 'mysql2/promise';
 
 const chance = new Chance();
 
-jest.mock('../src/pools');
+jest.mock('mysql2/promise', () => ({
+    createConnection: jest.fn(),
+}));
 
 describe('serverless mysql utility', () => {
-    describe('executeQuery', () => {
-        let mockPool = {};
+    let mockPool = {};
 
-        beforeEach(() => {
-            getPool.mockResolvedValue(mockPool);
+    beforeEach(() => {
+        createConnection.mockResolvedValue(mockPool);
+    });
+    describe('executeQuery', () => {
+        it('should configure mysql when the option is passed', async () => {
+            // given
+            const dbConfig = {
+                database: chance.word(),
+                host: chance.word(),
+                password: chance.word(),
+                user: chance.word(),
+            };
+
+            // when
+            await executeQuery('', dbConfig);
+
+            // then
+            expect(createConnection).toHaveBeenCalledTimes(1);
+            expect(createConnection).toHaveBeenCalledWith(dbConfig);
         });
 
         it('should successfully query mysql on the first try', async () => {
@@ -24,13 +42,11 @@ describe('serverless mysql utility', () => {
             const query = chance.string();
             const data = chance.n(chance.string, 6);
 
-            mockPool.execute = jest.fn().mockResolvedValue([data, null]);
+            mockPool.query = jest.fn().mockResolvedValue([data, null]);
 
             const response = await executeQuery(query, dbConfig);
 
-            expect(getPool).toHaveBeenCalledTimes(1);
-            expect(getPool).toHaveBeenCalledWith(dbConfig);
-            expect(mockPool.execute).toHaveBeenCalledWith(query, null);
+            expect(mockPool.query).toHaveBeenCalledWith(query);
 
             expect(response.data).toEqual(data);
         });
@@ -45,11 +61,11 @@ describe('serverless mysql utility', () => {
             const query = chance.string();
             const error = chance.string();
 
-            mockPool.execute = jest.fn().mockRejectedValue(error);
+            mockPool.query = jest.fn().mockRejectedValue(error);
 
             const response = await executeQuery(query, dbConfig);
 
-            expect(mockPool.execute).toHaveBeenCalledWith(query, null);
+            expect(mockPool.query).toHaveBeenCalledWith(query);
 
             expect(response.data).toEqual(undefined);
             expect(response.error).toEqual(error);
@@ -57,12 +73,6 @@ describe('serverless mysql utility', () => {
     });
 
     describe('executeQueryWithParams', () => {
-        let mockPool = {};
-
-        beforeEach(() => {
-            getPool.mockResolvedValue(mockPool);
-        });
-
         it('should configure mysql when the option is passed', async () => {
             // given
             const dbConfig = {
@@ -76,8 +86,8 @@ describe('serverless mysql utility', () => {
             await executeQueryWithParams('', [], dbConfig);
 
             // then
-            expect(getPool).toHaveBeenCalledTimes(1);
-            expect(getPool).toHaveBeenCalledWith(dbConfig);
+            expect(createConnection).toHaveBeenCalledTimes(1);
+            expect(createConnection).toHaveBeenCalledWith(dbConfig);
         });
 
         it('should successfully query mysql on the first try', async () => {

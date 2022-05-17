@@ -1,16 +1,24 @@
 import Chance from 'chance';
+import { createConnection } from 'mysql2/promise';
 import { executeTransaction } from '../src/execute-transaction';
-import { getPool } from '../src/pools';
 
 const chance = new Chance();
 
-jest.mock('../src/pools');
+jest.mock('mysql2/promise', () => ({
+    createConnection: jest.fn(),
+}));
 
 describe('execute Transaction', () => {
-    let mockPool = {};
+    const conn = {
+        beginTransaction: jest.fn(),
+        commit: jest.fn(),
+        end: jest.fn(),
+        query: jest.fn(),
+        rollback: jest.fn(),
+    };
 
     beforeEach(() => {
-        getPool.mockResolvedValue(mockPool);
+        createConnection.mockResolvedValue(conn);
     });
 
     it('should configure mysql when the option is passed', async () => {
@@ -27,21 +35,12 @@ describe('execute Transaction', () => {
         await executeTransaction(queries, dbConfig);
 
         // then
-        expect(getPool).toHaveBeenCalledTimes(1);
-        expect(getPool).toHaveBeenCalledWith(dbConfig);
+        expect(createConnection).toHaveBeenCalledTimes(1);
+        expect(createConnection).toHaveBeenCalledWith(dbConfig);
     });
 
     it('should successfully query mysql on the first try', async () => {
         // given
-        const conn = {
-            beginTransaction: jest.fn(),
-            commit: jest.fn(),
-            query: jest.fn(),
-            release: jest.fn(),
-        };
-
-        mockPool.getConnection = jest.fn().mockResolvedValue(conn);
-
         const queries = chance.n(chance.string, 5);
         const data = chance.string();
 
@@ -53,23 +52,13 @@ describe('execute Transaction', () => {
         // then
         expect(conn.beginTransaction).toHaveBeenCalledTimes(1);
         expect(conn.commit).toHaveBeenCalledTimes(1);
-        expect(conn.release).toHaveBeenCalledTimes(1);
+        expect(conn.end).toHaveBeenCalledTimes(1);
         expect(conn.query).toHaveBeenCalledTimes(5);
         expect(response.data).toEqual(Array(5).fill(data));
     });
 
     it('should return error', async () => {
         // given
-        const conn = {
-            beginTransaction: jest.fn(),
-            commit: jest.fn(),
-            query: jest.fn(),
-            release: jest.fn(),
-            rollback: jest.fn(),
-        };
-
-        mockPool.getConnection = jest.fn().mockResolvedValue(conn);
-
         const queries = chance.n(chance.string, 5);
         const error = chance.string();
 
@@ -81,7 +70,7 @@ describe('execute Transaction', () => {
         // then
         expect(conn.beginTransaction).toHaveBeenCalledTimes(1);
         expect(conn.commit).toHaveBeenCalledTimes(0);
-        expect(conn.release).toHaveBeenCalledTimes(1);
+        expect(conn.end).toHaveBeenCalledTimes(1);
         expect(conn.query).toHaveBeenCalledTimes(1);
         expect(response.data).toEqual([]);
         expect(response.error).toEqual(error);
