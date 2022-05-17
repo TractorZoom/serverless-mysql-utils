@@ -15,6 +15,7 @@ async function wrap<T extends RowData[] | QueryInfo>(
     dbConfig: ConnectionOptions
 ): QueryResponse<T> {
     const pool = await getPool({
+        charset: dbConfig.charset,
         database: dbConfig.database,
         host: dbConfig.host,
         password: dbConfig.password,
