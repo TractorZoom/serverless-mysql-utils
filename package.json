@@ -5,9 +5,6 @@
     "main": "lib/index.js",
     "author": "@TractorZoom",
     "license": "MIT",
-    "engines": {
-        "node": "12.x"
-    },
     "scripts": {
         "build": "tsc",
         "commit": "git-cz",
