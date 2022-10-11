@@ -2,11 +2,11 @@
     "name": "@tractorzoom/serverless-mysql-utils",
     "version": "5.2.44",
     "description": "Wrapper around serverless-mysql implementing standardized error handling and automatic retries",
-    "main": "lib/index.js",
+    "main": "index.js",
     "author": "@TractorZoom",
     "license": "MIT",
     "scripts": {
-        "build": "tsc",
+        "build": "rimraf lib && tsc && cp package.json lib",
         "commit": "git-cz",
         "test": "jest",
         "prettier:all": "prettier --write './**/*.*'",
