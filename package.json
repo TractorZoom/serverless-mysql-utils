@@ -22,7 +22,7 @@
         "@semantic-release/changelog": "6.0.2",
         "@semantic-release/git": "10.0.1",
         "@semantic-release/release-notes-generator": "10.0.3",
-        "@types/node": "16.18.7",
+        "@types/node": "16.18.8",
         "@typescript-eslint/eslint-plugin": "5.46.0",
         "@typescript-eslint/parser": "5.46.0",
         "chance": "1.1.9",
