@@ -3382,10 +3382,10 @@ eslint-config-prettier@8.5.0:
   resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-8.5.0.tgz#5a81680ec934beca02c7b1a61cf8ca34b66feab1"
   integrity sha512-obmWKLUNCnhtQRKc+tmnYuQl0pFU1ibYJQ5BGhTVB08bHe9wC8qUeG7c08dj9XX+AuPj1YSGSQIHl1pnDHZR0Q==
 
-eslint-plugin-filename-rules@1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-filename-rules/-/eslint-plugin-filename-rules-1.3.0.tgz#d3f4418595252a4338d4caf33d8b19c2fb3c0b02"
-  integrity sha512-r3FZY0EMlZuOMSF1VkE2BxP59EqGBraR02EZfWbdMSiGyorGHGdd8FdPoAnYydXlR0u4YD4ZH8ddLqEh8ASBMw==
+eslint-plugin-filename-rules@1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-filename-rules/-/eslint-plugin-filename-rules-1.3.1.tgz#8fb769f2c19dc832b43c13d76c1442bca4a2f4a4"
+  integrity sha512-kBMxGFvK3QrRBHMurhFSNa+PFdszezVtBV6egg39TDzlj6D4jL3Xx6oyNjm5xE4C+TdQUBzWwymHJHBPyxOreA==
 
 eslint-plugin-jsx-a11y@6.6.1:
   version "6.6.1"
