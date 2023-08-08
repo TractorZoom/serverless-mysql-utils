@@ -6,7 +6,7 @@
     "author": "@TractorZoom",
     "license": "MIT",
     "scripts": {
-        "build": "rimraf lib && tsc --allowJs false && cp package.json lib",
+        "build": "rimraf lib && tsc --project tsconfig.build.json && cp package.json lib",
         "commit": "git-cz",
         "test": "jest",
         "prettier:all": "prettier --write './**/*.*'",
