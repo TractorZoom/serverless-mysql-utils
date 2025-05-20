@@ -1,7 +1,12 @@
 import { ConnectionOptions, createPool } from 'mysql2/promise';
+import { StreamOptions } from 'mysql2/typings/mysql/lib/protocol/sequences/Query';
 import stream from 'stream';
 
-export const streamQuery = (query: string, dbConfig: ConnectionOptions): Promise<stream.Readable> => {
+export const streamQuery = (
+    query: string,
+    dbConfig: ConnectionOptions,
+    streamOptions?: StreamOptions
+): Promise<stream.Readable> => {
     return new Promise((resolve, reject) => {
         const pool = createPool({
             charset: dbConfig.charset,
@@ -12,7 +17,7 @@ export const streamQuery = (query: string, dbConfig: ConnectionOptions): Promise
             user: dbConfig.user,
         });
 
-        const queryStream = pool.pool.query(query).stream();
+        const queryStream = pool.pool.query(query).stream(streamOptions);
 
         queryStream.once('error', reject);
         queryStream.once('fields', () => {
