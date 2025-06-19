@@ -22,7 +22,7 @@ export async function executeTransaction(queries: string[], dbConfig: Connection
         for (const query of queries) {
             const response = await conn.query(query);
 
-            data.push(response);
+            data.push(response?.[0]); // the first element is RowData[] | QueryInfo, the second is a field list that we ignore
         }
         await conn.commit();
     } catch (ex) {
