@@ -50,7 +50,7 @@ describe('execute Transaction', () => {
         const queries = chance.n(chance.string, 5);
         const data = chance.string();
 
-        conn.query.mockResolvedValue(data);
+        conn.query.mockResolvedValue([data, chance.word()]);
 
         // when
         const response = await executeTransaction(queries, dbConfig);
