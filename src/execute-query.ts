@@ -1,13 +1,7 @@
+import { QueryInfo, QueryResponse, RowData } from './types';
 import { ConnectionOptions } from 'mysql2';
-import { QueryResponse } from './types';
 import { RowDataPacket } from 'mysql2/promise';
 import { getPool } from './pools';
-
-type RowData = {
-    [name: string]: any;
-};
-
-type QueryInfo = { affectedRows?: number; insertId?: number };
 
 async function wrap<T extends RowData[] | QueryInfo>(
     query: string,

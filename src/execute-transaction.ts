@@ -1,9 +1,9 @@
 import { ConnectionOptions, PoolConnection } from 'mysql2/promise';
-import { TransactionResponse } from './types';
+import { QueryInfo, RowData, TransactionResponse } from './types';
 import { getPool } from './pools';
 
 export async function executeTransaction(queries: string[], dbConfig: ConnectionOptions): TransactionResponse {
-    const data: any[] = [];
+    const data: (RowData[] | QueryInfo)[] = [];
     let error;
     let conn: PoolConnection = null;
 
