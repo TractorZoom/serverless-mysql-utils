@@ -63,6 +63,25 @@ describe('execute Transaction', () => {
         expect(response.data).toEqual(Array(5).fill(data));
     });
 
+    it('should handle missing result set', async () => {
+        // this is likely not possible, but I wanted to add a safe dereference
+        const dbConfig = {
+            database: chance.word(),
+            host: chance.word(),
+            password: chance.word(),
+            user: chance.word(),
+        };
+        const queries = chance.n(chance.string, 5);
+
+        const response = await executeTransaction(queries, dbConfig);
+
+        expect(conn.beginTransaction).toHaveBeenCalledTimes(1);
+        expect(conn.commit).toHaveBeenCalledTimes(1);
+        expect(conn.release).toHaveBeenCalledTimes(1);
+        expect(conn.query).toHaveBeenCalledTimes(5);
+        expect(response.data).toEqual(Array(5).fill(undefined));
+    });
+
     it('should return error', async () => {
         // given
         const dbConfig = {
