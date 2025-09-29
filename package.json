@@ -46,7 +46,7 @@
         "uuid": "9.0.0"
     },
     "dependencies": {
-        "mysql2": "3.9.8"
+        "mysql2": "3.14.4"
     },
     "config": {
         "commitizen": {
