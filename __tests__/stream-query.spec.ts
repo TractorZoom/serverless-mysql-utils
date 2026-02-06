@@ -61,8 +61,6 @@ describe('A Stream Query Function', () => {
         await streamQuery(query, dbConfig);
 
         // then: createPool was called with ssl from dbConfig (not default {})
-        expect(createPool).toHaveBeenCalledWith(
-            expect.objectContaining({ ssl: sslConfig })
-        );
+        expect(createPool).toHaveBeenCalledWith(expect.objectContaining({ ssl: sslConfig }));
     });
 });
