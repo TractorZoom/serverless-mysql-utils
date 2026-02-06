@@ -15,6 +15,7 @@ export const streamQuery = (
             host: dbConfig.host,
             password: dbConfig.password,
             user: dbConfig.user,
+            ssl: dbConfig.ssl !== undefined ? dbConfig.ssl : {},
         });
 
         const queryStream = pool.pool.query(query).stream(streamOptions);
