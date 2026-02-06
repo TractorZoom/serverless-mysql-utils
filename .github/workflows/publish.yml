@@ -19,7 +19,7 @@ jobs:
             - run: yarn test
 
     npm-publish:
-        needs: build-and-publish
+        needs: build-and-test
         runs-on: ubuntu-latest
         permissions:
             contents: write
