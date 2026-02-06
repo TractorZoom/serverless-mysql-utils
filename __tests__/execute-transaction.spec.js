@@ -34,9 +34,23 @@ describe('execute Transaction', () => {
         // when
         await executeTransaction(queries, dbConfig);
 
-        // then
+        // then - implementation adds ssl: {} when undefined so mysql uses secure connection (required for caching_sha2_password)
         expect(getPool).toHaveBeenCalledTimes(1);
-        expect(getPool).toHaveBeenCalledWith(dbConfig);
+        expect(getPool).toHaveBeenCalledWith({ ...dbConfig, ssl: {} });
+    });
+
+    it('should pass through ssl config when provided', async () => {
+        const dbConfig = {
+            database: chance.word(),
+            host: chance.word(),
+            password: chance.word(),
+            user: chance.word(),
+            ssl: { ca: chance.string() },
+        };
+
+        await executeTransaction([], dbConfig);
+
+        expect(getPool).toHaveBeenCalledWith(expect.objectContaining({ ssl: dbConfig.ssl }));
     });
 
     it('should successfully query mysql on the first try', async () => {

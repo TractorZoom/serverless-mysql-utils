@@ -26,9 +26,23 @@ describe('serverless mysql utility', () => {
             // when
             await executeQuery('', dbConfig);
 
-            // then
+            // then - implementation adds ssl: {} when undefined so mysql uses secure connection (required for caching_sha2_password)
             expect(getPool).toHaveBeenCalledTimes(1);
-            expect(getPool).toHaveBeenCalledWith(dbConfig);
+            expect(getPool).toHaveBeenCalledWith(expect.objectContaining({ ...dbConfig, ssl: {} }));
+        });
+
+        it('should pass through ssl config when provided', async () => {
+            const dbConfig = {
+                database: chance.word(),
+                host: chance.word(),
+                password: chance.word(),
+                user: chance.word(),
+                ssl: { ca: chance.string() },
+            };
+
+            await executeQuery('', dbConfig);
+
+            expect(getPool).toHaveBeenCalledWith(expect.objectContaining({ ssl: dbConfig.ssl }));
         });
 
         it('should successfully query mysql on the first try', async () => {
@@ -84,9 +98,9 @@ describe('serverless mysql utility', () => {
             // when
             await executeQueryWithParams('', [], dbConfig);
 
-            // then
+            // then - implementation adds ssl: {} when undefined so mysql uses secure connection (required for caching_sha2_password)
             expect(getPool).toHaveBeenCalledTimes(1);
-            expect(getPool).toHaveBeenCalledWith(dbConfig);
+            expect(getPool).toHaveBeenCalledWith(expect.objectContaining({ ...dbConfig, ssl: {} }));
         });
 
         it('should successfully query mysql on the first try', async () => {

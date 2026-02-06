@@ -13,6 +13,7 @@ export async function executeTransaction(queries: string[], dbConfig: Connection
             host: dbConfig.host,
             password: dbConfig.password,
             user: dbConfig.user,
+            ssl: dbConfig.ssl !== undefined ? dbConfig.ssl : {},
         });
 
         conn = await pool.getConnection();

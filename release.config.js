@@ -28,24 +28,16 @@ module.exports = {
         [
             '@semantic-release/release-notes-generator',
             {
-                preset: 'angular',
                 parserOpts: {
                     noteKeywords: ['breaking', 'chore'],
                 },
+                preset: 'angular',
                 writerOpts: {
                     commitsSort: ['subject', 'scope'],
                 },
             },
         ],
-        '@semantic-release/changelog',
         '@semantic-release/github',
         '@semantic-release/npm',
-        [
-            '@semantic-release/git',
-            {
-                assets: ['package.json'],
-                message: 'chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}',
-            },
-        ],
     ],
 };

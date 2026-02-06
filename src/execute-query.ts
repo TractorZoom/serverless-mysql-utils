@@ -15,6 +15,7 @@ async function wrap<T extends RowData[] | QueryInfo>(
         host: dbConfig.host,
         password: dbConfig.password,
         user: dbConfig.user,
+        ssl: dbConfig.ssl !== undefined ? dbConfig.ssl : {},
     });
 
     let data: T;
