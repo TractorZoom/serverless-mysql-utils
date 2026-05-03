@@ -40,7 +40,7 @@
         "semantic-release": "^25.0.3",
         "ts-jest": "29.0.3",
         "typescript": "4.9.4",
-        "uuid": "9.0.0"
+        "uuid": "14.0.0"
     },
     "dependencies": {
         "mysql2": "3.9.8"
