@@ -115,11 +115,15 @@ describe('serverless mysql utility', () => {
             const query = chance.string();
             const data = chance.n(chance.string, 6);
 
-            mockPool.execute = jest.fn().mockResolvedValue([data, null]);
+            mockPool.query = jest.fn().mockResolvedValue([data, null]);
 
             const response = await executeQueryWithParams(query, params, dbConfig);
 
-            expect(mockPool.execute).toHaveBeenCalledWith(query, params);
+            // uses query() rather than execute() so dynamically-shaped SQL text
+            // (e.g. squel-built inserts/updates with varying column lists) never
+            // accumulates as a permanent server-side prepared statement
+            expect(mockPool.query).toHaveBeenCalledWith(query, params);
+            expect(mockPool.execute).toBeUndefined();
 
             expect(response.data).toEqual(data);
         });
@@ -135,11 +139,11 @@ describe('serverless mysql utility', () => {
             const query = chance.string();
             const error = chance.string();
 
-            mockPool.execute = jest.fn().mockRejectedValue(error);
+            mockPool.query = jest.fn().mockRejectedValue(error);
 
             const response = await executeQueryWithParams(query, params, dbConfig);
 
-            expect(mockPool.execute).toHaveBeenCalledWith(query, params);
+            expect(mockPool.query).toHaveBeenCalledWith(query, params);
 
             expect(response.data).toEqual(undefined);
             expect(response.error).toEqual(error);

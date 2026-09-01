@@ -22,8 +22,13 @@ async function wrap<T extends RowData[] | QueryInfo>(
     let error;
 
     try {
+        // uses query() rather than execute() even when params are present: the SQL text
+        // passed in here is frequently built dynamically (e.g. squel-generated inserts/
+        // updates whose column list varies per call), so execute()'s server-side prepared
+        // statements would never be reused and instead accumulate indefinitely per pooled
+        // connection until MySQL's max_prepared_stmt_count is exhausted
         if (params) {
-            data = (await pool.execute<T & RowDataPacket[]>(query, params))[0];
+            data = (await pool.query<T & RowDataPacket[]>(query, params))[0];
         } else {
             data = (await pool.query<T & RowDataPacket[]>(query))[0];
         }
