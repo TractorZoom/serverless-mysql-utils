@@ -144,5 +144,28 @@ describe('serverless mysql utility', () => {
             expect(response.data).toEqual(undefined);
             expect(response.error).toEqual(error);
         });
+
+        it('should use pool.query instead of pool.execute when preparedStatement is false', async () => {
+            const dbConfig = {
+                database: chance.word(),
+                host: chance.word(),
+                password: chance.word(),
+                user: chance.word(),
+            };
+
+            const params = chance.n(chance.string, 6);
+            const query = chance.string();
+            const data = chance.n(chance.string, 6);
+
+            mockPool.query = jest.fn().mockResolvedValue([data, null]);
+            mockPool.execute = jest.fn();
+
+            const response = await executeQueryWithParams(query, params, dbConfig, { preparedStatement: false });
+
+            expect(mockPool.query).toHaveBeenCalledWith(query, params);
+            expect(mockPool.execute).not.toHaveBeenCalled();
+
+            expect(response.data).toEqual(data);
+        });
     });
 });
