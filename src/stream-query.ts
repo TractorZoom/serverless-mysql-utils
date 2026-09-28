@@ -13,8 +13,8 @@ export const streamQuery = (
             connectTimeout: dbConfig.connectTimeout,
             database: dbConfig.database,
             host: dbConfig.host,
-            port: dbConfig.port,
             password: dbConfig.password,
+            port: dbConfig.port,
             user: dbConfig.user,
             ssl: dbConfig.ssl !== undefined ? dbConfig.ssl : {},
         });

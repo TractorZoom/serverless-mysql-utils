@@ -11,8 +11,8 @@ export async function executeTransaction(queries: string[], dbConfig: Connection
         const pool = await getPool({
             database: dbConfig.database,
             host: dbConfig.host,
-            port: dbConfig.port,
             password: dbConfig.password,
+            port: dbConfig.port,
             user: dbConfig.user,
             ssl: dbConfig.ssl !== undefined ? dbConfig.ssl : {},
         });
