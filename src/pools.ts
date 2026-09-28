@@ -4,7 +4,7 @@ import { Pool } from 'mysql2/promise';
 const _pools: { [cacheKey: string]: Pool } = {};
 
 export const getPool = async (config: ConnectionOptions): Promise<Pool> => {
-    const cacheKey = config.host + ':' + config.database;
+    const cacheKey = `${config.host}:${config.port ?? ''}:${config.database}`;
 
     if (_pools[cacheKey]) return _pools[cacheKey];
 

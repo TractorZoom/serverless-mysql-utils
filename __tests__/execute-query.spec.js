@@ -31,6 +31,20 @@ describe('serverless mysql utility', () => {
             expect(getPool).toHaveBeenCalledWith(expect.objectContaining({ ...dbConfig, ssl: {} }));
         });
 
+        it('should pass through port when provided', async () => {
+            const dbConfig = {
+                database: chance.word(),
+                host: chance.word(),
+                port: chance.natural({ min: 1024, max: 65535 }),
+                password: chance.word(),
+                user: chance.word(),
+            };
+
+            await executeQuery('', dbConfig);
+
+            expect(getPool).toHaveBeenCalledWith(expect.objectContaining({ port: dbConfig.port }));
+        });
+
         it('should pass through ssl config when provided', async () => {
             const dbConfig = {
                 database: chance.word(),

@@ -39,4 +39,19 @@ describe('pools helper', () => {
         expect(pool1).toBe(mockPool);
         expect(pool2).toBe(mockPool);
     });
+
+    it('should create separate pools for the same host and database on different ports', async () => {
+        const host = chance.string();
+        const database = chance.word();
+        const poolA = { something: chance.string() };
+        const poolB = { something: chance.string() };
+
+        createPool.mockReturnValueOnce({ promise: () => poolA }).mockReturnValueOnce({ promise: () => poolB });
+
+        const pool1 = await getPool({ host, database, port: 3306 });
+        const pool2 = await getPool({ host, database, port: 3307 });
+
+        expect(pool1).toBe(poolA);
+        expect(pool2).toBe(poolB);
+    });
 });

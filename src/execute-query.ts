@@ -24,6 +24,7 @@ async function wrap<T extends RowData[] | QueryInfo>(
         connectTimeout: dbConfig.connectTimeout,
         database: dbConfig.database,
         host: dbConfig.host,
+        port: dbConfig.port,
         password: dbConfig.password,
         user: dbConfig.user,
         ssl: dbConfig.ssl !== undefined ? dbConfig.ssl : {},
