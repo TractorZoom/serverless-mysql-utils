@@ -168,4 +168,45 @@ describe('serverless mysql utility', () => {
             expect(response.data).toEqual(data);
         });
     });
+
+    describe('dropped connection retry', () => {
+        const dbConfig = { database: 'db', host: 'host', password: 'pw', user: 'user' };
+        const droppedError = (code) => Object.assign(new Error(`dropped: ${code}`), { code });
+
+        it.each(['EPIPE', 'ECONNRESET', 'PROTOCOL_CONNECTION_LOST'])(
+            'should retry once and return data when the first attempt fails with %s',
+            async (code) => {
+                const data = chance.n(chance.string, 3);
+                mockPool.execute = jest
+                    .fn()
+                    .mockRejectedValueOnce(droppedError(code))
+                    .mockResolvedValueOnce([data, null]);
+
+                const response = await executeQueryWithParams('SELECT 1', [1], dbConfig);
+
+                expect(mockPool.execute).toHaveBeenCalledTimes(2);
+                expect(response.data).toEqual(data);
+                expect(response.error).toBeUndefined();
+            }
+        );
+
+        it('should return the error when the retry also fails', async () => {
+            mockPool.query = jest.fn().mockRejectedValue(droppedError('EPIPE'));
+
+            const response = await executeQuery('SELECT 1', dbConfig);
+
+            expect(mockPool.query).toHaveBeenCalledTimes(2);
+            expect(response.data).toBeUndefined();
+            expect(response.error).toEqual('Error: dropped: EPIPE');
+        });
+
+        it('should not retry other errors', async () => {
+            mockPool.query = jest.fn().mockRejectedValue(Object.assign(new Error('dup'), { code: 'ER_DUP_ENTRY' }));
+
+            const response = await executeQuery('INSERT 1', dbConfig);
+
+            expect(mockPool.query).toHaveBeenCalledTimes(1);
+            expect(response.error).toEqual('Error: dup');
+        });
+    });
 });
