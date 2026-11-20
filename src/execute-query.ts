@@ -15,6 +15,10 @@ export type ExecuteQueryOptions = {
 
 const DROPPED_CONNECTION_CODES = ['EPIPE', 'ECONNRESET', 'PROTOCOL_CONNECTION_LOST'];
 
+// Only reads are retried. A write may have committed before the connection dropped, so running it
+// again could apply it twice. WITH is left out because MySQL allows WITH ... UPDATE / DELETE.
+const READ_ONLY_QUERY = /^\s*(SELECT|SHOW|DESCRIBE|DESC|EXPLAIN)\b/i;
+
 async function wrap<T extends RowData[] | QueryInfo>(
     query: string,
     params: any[] | any,
@@ -48,7 +52,7 @@ async function wrap<T extends RowData[] | QueryInfo>(
         try {
             data = await run();
         } catch (ex) {
-            if (!DROPPED_CONNECTION_CODES.includes(ex.code)) throw ex;
+            if (!DROPPED_CONNECTION_CODES.includes(ex.code) || !READ_ONLY_QUERY.test(query)) throw ex;
 
             // The RDS proxy can close a pooled connection while the Lambda is frozen. The pool
             // discards the dead connection on this error, so one retry gets a fresh one.

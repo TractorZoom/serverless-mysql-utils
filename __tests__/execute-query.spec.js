@@ -203,10 +203,31 @@ describe('serverless mysql utility', () => {
         it('should not retry other errors', async () => {
             mockPool.query = jest.fn().mockRejectedValue(Object.assign(new Error('dup'), { code: 'ER_DUP_ENTRY' }));
 
-            const response = await executeQuery('INSERT 1', dbConfig);
+            const response = await executeQuery('SELECT 1', dbConfig);
 
             expect(mockPool.query).toHaveBeenCalledTimes(1);
             expect(response.error).toEqual('Error: dup');
         });
+
+        it('should retry a read with leading whitespace and lowercase keyword', async () => {
+            mockPool.query = jest.fn().mockRejectedValueOnce(droppedError('EPIPE')).mockResolvedValueOnce([[], null]);
+
+            const response = await executeQuery('\n    select id from user', dbConfig);
+
+            expect(mockPool.query).toHaveBeenCalledTimes(2);
+            expect(response.error).toBeUndefined();
+        });
+
+        it.each(['INSERT INTO t VALUES (1)', 'UPDATE t SET n = n + 1', 'WITH x AS (SELECT 1) DELETE FROM t'])(
+            'should not retry a write after a dropped connection: %s',
+            async (query) => {
+                mockPool.query = jest.fn().mockRejectedValue(droppedError('PROTOCOL_CONNECTION_LOST'));
+
+                const response = await executeQuery(query, dbConfig);
+
+                expect(mockPool.query).toHaveBeenCalledTimes(1);
+                expect(response.error).toEqual('Error: dropped: PROTOCOL_CONNECTION_LOST');
+            }
+        );
     });
 });
